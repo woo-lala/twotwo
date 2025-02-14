@@ -65,4 +65,7 @@ out/
 hs_err_pid*
 replay_pid*
 
+# config
+application-dev.yml
+
 # End of https://www.toptal.com/developers/gitignore/api/java
