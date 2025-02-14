@@ -1,5 +1,4 @@
 spring:
-  application:
-    name: twotwo
   profiles:
     active: dev
+
