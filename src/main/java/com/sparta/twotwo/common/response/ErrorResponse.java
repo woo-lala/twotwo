@@ -12,8 +12,8 @@ public class ErrorResponse {
         this.errorCode = errorCode;
     }
 
-    public ErrorResponse from(ErrorCode code) {
-        return new ErrorResponse(code);
+    public ErrorResponse from(ErrorCode errorCode) {
+        return new ErrorResponse(errorCode);
     }
 
 
