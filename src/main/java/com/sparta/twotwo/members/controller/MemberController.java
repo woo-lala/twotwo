@@ -1,7 +1,6 @@
 package com.sparta.twotwo.members.controller;
 
 import com.sparta.twotwo.members.dto.SignupRequestDto;
-import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,8 @@ public class MemberController {
     public ResponseEntity createMember(@RequestBody SignupRequestDto requestDto) {
         memberService.createMember(requestDto);
 
-        return new ResponseEntity<>(201, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+
 }

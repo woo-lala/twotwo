@@ -33,4 +33,11 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private MemberStatusEnum memberStatus =  MemberStatusEnum.ACTIVE;
+
+    public Member(String username, String nickname, String email, String password) {
+        this.username = username;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+    }
 }
