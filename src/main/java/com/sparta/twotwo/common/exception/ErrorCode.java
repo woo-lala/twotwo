@@ -1,20 +1,37 @@
 package com.sparta.twotwo.common.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@AllArgsConstructor
 public enum ErrorCode {
-    EXAMPLE(HttpStatus.FORBIDDEN,"예시");
 
-    private final int statusCode;
-    private final String message;
+    //4XX
+    STORE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "가게 요청의 구문이 잘못되었습니다."),
+    PRODUCT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
+    ORDER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "요청의 구문이 잘못되었습니다."),
 
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "지정한 리소스에 대한 액세스 권한이 없습니다."),
+    PAYMENT_REQUIRED(HttpStatus.PAYMENT_REQUIRED, "지정한 리소스를 액세스하기 위해서는 결제가 필요합니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "지정한 리소스에 대한 액세스가 금지되었습니다."),
 
-    ErrorCode(HttpStatus statusCode, String message) {
-        this.statusCode = statusCode.value();
-        this.message = message;
-    }
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "지정한 리소스를 찾을 수 없습니다."),
 
+    CONFLICT(HttpStatus.CONFLICT, "서버가 요청을 수행하는 중에 충돌이 발생하였습니다.,"),
 
+    //5XX
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 에러가 발생하였습니다."),
+    NOT_IMPLEMENTED(HttpStatus.NOT_IMPLEMENTED, "요청한 URI의 메소드에 대해 서버가 구현하고 있지 않습니다."),
+    BAD_GATEWAY(HttpStatus.BAD_GATEWAY, "게이트웨이 또는 프록시 역할을 하는 서버가 그 뒷단의 서버로부터 잘못된 응답을 받았습니다."),
+
+    ;
+
+    private HttpStatus status;
+    private String message;
 }
