@@ -1,5 +1,6 @@
 package com.sparta.twotwo.order.entity;
 
+import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Table(name = "p_order")
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -36,6 +37,8 @@ public class Order {
                 .order_id(order_id)
                 .order_type(order_type)
                 .price(price)
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
                 .build();
     }
 

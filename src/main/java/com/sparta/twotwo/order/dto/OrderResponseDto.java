@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -18,5 +19,8 @@ public class OrderResponseDto {
     private UUID order_id;
     private OrderType order_type;
     private Long price;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }
