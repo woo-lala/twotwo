@@ -7,13 +7,15 @@ import lombok.Getter;
 public class ErrorResponse {
 
     private ErrorCode errorCode;
+    private String message;
 
-    private ErrorResponse(ErrorCode errorCode){
+    private ErrorResponse(ErrorCode errorCode, String message){
         this.errorCode = errorCode;
+        this.message = message;
     }
 
-    public ErrorResponse from(ErrorCode errorCode) {
-        return new ErrorResponse(errorCode);
+    public static ErrorResponse from(ErrorCode errorCode, String message) {
+        return new ErrorResponse(errorCode, message);
     }
 
 
