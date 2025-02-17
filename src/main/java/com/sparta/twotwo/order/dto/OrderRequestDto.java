@@ -1,6 +1,7 @@
 package com.sparta.twotwo.order.dto;
 
 import com.sparta.twotwo.enums.OrderType;
+import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.order.entity.Order;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,11 +14,16 @@ public class OrderRequestDto {
     private Long storeId;
     private OrderType orderType;
     private Long price;
+    private Long createdBy;
+    private Long updatedBy;
+    private Long deletedBy;
 
-    public Order toEntity(){
+    //TODO StoreId 받기
+    public Order toEntity(Member member) {
         return Order.builder()
                 .price(price)
                 .order_type(orderType)
+                .member(member)
                 .build();
     }
 

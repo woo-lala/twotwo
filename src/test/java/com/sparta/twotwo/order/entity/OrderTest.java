@@ -1,6 +1,9 @@
 package com.sparta.twotwo.order.entity;
 
 import com.sparta.twotwo.enums.OrderType;
+import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.members.entity.RolesEnum;
+import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.repository.OrderRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +23,17 @@ class OrderTest {
 
     @Autowired
     private OrderRepository repository;
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("주문 생성")
     @Transactional
     public void save(){
+
+        Member member = new Member("membe1","asd","asd@email.com","asd", null, true);
+        memberRepository.save(member);
+
+
 
         Order order = Order.builder()
                 .order_type(OrderType.ONLINE)

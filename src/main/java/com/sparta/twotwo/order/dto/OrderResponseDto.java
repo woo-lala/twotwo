@@ -16,7 +16,9 @@ import java.util.UUID;
 @Builder
 public class OrderResponseDto {
 
+    private Long memberId;
     private UUID order_id;
+    private Long storeId;
     private OrderType order_type;
     private Long price;
 

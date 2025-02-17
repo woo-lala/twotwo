@@ -2,6 +2,7 @@ package com.sparta.twotwo.order.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.enums.OrderType;
+import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,9 +17,10 @@ import java.util.UUID;
 public class Order extends BaseEntity {
 
     @Builder
-    public Order(OrderType order_type, Long price) {
+    public Order(OrderType order_type, Long price, Member member) {
         this.order_type = order_type;
         this.price = price;
+        this.member = member;
     }
 
     @Id
@@ -34,6 +36,12 @@ public class Order extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Long price;
 
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+
     public void changePrice(Long price) {
         this.price = price;
     }
@@ -48,6 +56,7 @@ public class Order extends BaseEntity {
                 .order_id(order_id)
                 .order_type(order_type)
                 .price(price)
+                .memberId(member.getMember_id())
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
