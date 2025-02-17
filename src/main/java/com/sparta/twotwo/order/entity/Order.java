@@ -29,10 +29,10 @@ public class Order extends BaseEntity {
     private UUID order_id;
 
     @Enumerated
-    @Column(name = "order_type")
+    @Column(name = "order_type", nullable = false)
     private OrderType order_type;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Long price;
 
     public void changePrice(Long price) {
