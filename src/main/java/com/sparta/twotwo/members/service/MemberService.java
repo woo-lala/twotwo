@@ -25,7 +25,7 @@ public class MemberService {
         String username = requestDto.getUsername();
 //        String password = passwordEncoder.encode(requestDto.getPassword());
         String password = requestDto.getPassword();
-        boolean is_public = requestDto.isIn_public();
+        boolean is_public = requestDto.is_public();
         List<String> roles = authorityUtil.createRoles(email);
 
         existEmail(email);

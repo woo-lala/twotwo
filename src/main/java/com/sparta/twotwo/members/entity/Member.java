@@ -1,5 +1,6 @@
 package com.sparta.twotwo.members.entity;
 
+import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="members")
-public class Member {
+@Table(name="p_members")
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long member_id;

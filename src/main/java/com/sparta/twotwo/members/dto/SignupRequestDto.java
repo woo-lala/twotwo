@@ -17,7 +17,7 @@ public class SignupRequestDto {
     @NotBlank
     @Email
     private String email;
-    private boolean in_public;
+    private boolean is_public;
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+-=]{8,15}$")
     private String password;
