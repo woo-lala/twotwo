@@ -2,7 +2,11 @@ package com.sparta.twotwo.order.dto;
 
 import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.order.entity.Order;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OrderRequestDto {
 
     private Long memberId;
@@ -17,4 +21,13 @@ public class OrderRequestDto {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "OrderRequestDto{" +
+                "memberId=" + memberId +
+                ", storeId=" + storeId +
+                ", orderType=" + orderType +
+                ", price=" + price +
+                '}';
+    }
 }

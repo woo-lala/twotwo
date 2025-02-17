@@ -2,6 +2,7 @@ package com.sparta.twotwo.order.controller;
 
 
 import com.sparta.twotwo.common.response.ApiResponse;
+import com.sparta.twotwo.order.dto.OrderRequestDto;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import com.sparta.twotwo.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class OrderController {
@@ -36,6 +35,13 @@ public class OrderController {
 
     }
 
+    @PostMapping("/orders")
+    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto requestDto){
+        log.info("requestDto: {}", requestDto);
+        OrderResponseDto orderResponseDto = orderService.saveOrder(requestDto);
+
+        return new ResponseEntity<>(ApiResponse.success(orderResponseDto), HttpStatus.OK);
+    }
 
 
 
