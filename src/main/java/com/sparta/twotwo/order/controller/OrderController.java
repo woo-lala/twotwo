@@ -1,6 +1,7 @@
 package com.sparta.twotwo.order.controller;
 
 
+import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import com.sparta.twotwo.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class OrderController {
 
 
     @GetMapping("/orders")
-    public ResponseEntity<Page<OrderResponseDto>> getOrders(
+    public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> getOrders(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam("sortBy") String sortBy,
@@ -31,10 +32,12 @@ public class OrderController {
 
         Page<OrderResponseDto> orders = orderService.getOrders(page - 1, size, sortBy, isAsc);
 
-        return new ResponseEntity<>(orders, HttpStatus.OK);
-
+        return new ResponseEntity<>(ApiResponse.success(orders), HttpStatus.OK);
 
     }
+
+
+
 
 
 }
