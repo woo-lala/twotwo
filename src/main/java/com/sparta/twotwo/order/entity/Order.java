@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Entity
 @Getter
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_order")
 public class Order extends BaseEntity {
