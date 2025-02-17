@@ -5,6 +5,7 @@ import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,15 +17,15 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final AuthorityUtil authorityUtil;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     public void createMember(SignupRequestDto requestDto) {
         String email = requestDto.getEmail();
         String nickname = requestDto.getNickname();
         String username = requestDto.getUsername();
-//        String password = passwordEncoder.encode(requestDto.getPassword());
-        String password = requestDto.getPassword();
+        String password = passwordEncoder.encode(requestDto.getPassword());
+//        String password = requestDto.getPassword();
         boolean is_public = requestDto.is_public();
         List<String> roles = authorityUtil.createRoles(email);
 
