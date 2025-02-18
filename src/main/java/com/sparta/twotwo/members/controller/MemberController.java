@@ -1,6 +1,7 @@
 package com.sparta.twotwo.members.controller;
 
 import com.sparta.twotwo.common.response.ApiResponse;
+import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.MemberResponseDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
@@ -40,6 +41,15 @@ public class MemberController {
     @GetMapping("/{member_id}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> getMember(@PathVariable("member_id") Long member_id) {
         Member member = memberService.getMember(member_id);
+        MemberResponseDto response = new MemberResponseDto(member);
+
+        return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{member_id}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable("member_id") Long member_id,
+                                                                       @RequestBody MemberRequestDto requestDto) {
+        Member member = memberService.updateMember(member_id, requestDto);
         MemberResponseDto response = new MemberResponseDto(member);
 
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);

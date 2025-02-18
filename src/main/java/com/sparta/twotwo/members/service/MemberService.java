@@ -3,13 +3,14 @@ package com.sparta.twotwo.members.service;
 import com.sparta.twotwo.auth.util.AuthorityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
-import com.sparta.twotwo.members.dto.MemberResponseDto;
+import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,10 +46,18 @@ public class MemberService {
     }
 
     public Member getMember(Long memberId) {
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        return optionalMember.orElseThrow(() ->
-             new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+        return findMember(memberId);
+    }
+
+    @Transactional
+    public Member updateMember(Long memberId, MemberRequestDto requestDto) {
+        Member member = findMember(memberId);
+
+        Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
+        Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
+
+        return memberRepository.save(member);
     }
 
     public void existEmail(String email) {
@@ -67,5 +76,11 @@ public class MemberService {
         }
     }
 
+    public Member findMember(Long memberId) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        return optionalMember.orElseThrow(() ->
+                new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+    }
 
 }
