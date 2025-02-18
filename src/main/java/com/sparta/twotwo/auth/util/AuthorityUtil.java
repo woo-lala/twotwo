@@ -1,9 +1,14 @@
 package com.sparta.twotwo.auth.util;
 
 import com.sparta.twotwo.members.entity.RolesEnum;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class AuthorityUtil {
     private final static String masterEmail = "master@email.com";
@@ -26,5 +31,12 @@ public class AuthorityUtil {
             return OWNER_STRING;
         }
         return CUSTOMER_STRING;
+    }
+
+    public List<GrantedAuthority> createAuthorities(List<String> roles) {
+
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
     }
 }

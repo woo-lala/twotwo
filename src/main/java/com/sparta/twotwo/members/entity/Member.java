@@ -35,6 +35,7 @@ public class Member extends BaseEntity {
     private boolean is_public = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "p_member_roles")
     private List<String> roles = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
