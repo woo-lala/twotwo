@@ -1,6 +1,7 @@
 package com.sparta.twotwo.members.service;
 
 import com.sparta.twotwo.auth.util.AuthorityUtil;
+import com.sparta.twotwo.members.dto.MemberResponseDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
@@ -25,7 +26,6 @@ public class MemberService {
         String nickname = requestDto.getNickname();
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
-//        String password = requestDto.getPassword();
         boolean is_public = requestDto.is_public();
         List<String> roles = authorityUtil.createRoles(email);
 
@@ -51,5 +51,10 @@ public class MemberService {
         if (member.isPresent()) {
             throw new IllegalArgumentException("중복된 이름입니다.");
         }
+    }
+
+    public List<Member> getMembers() {
+
+        return memberRepository.findAll();
     }
 }

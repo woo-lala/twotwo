@@ -34,9 +34,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizationRequests) -> {
             authorizationRequests
+                    //member
                     .requestMatchers("/api/members/signup").permitAll()
                     .requestMatchers("/api/members/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
+                    .requestMatchers(HttpMethod.GET, "/api/members/").hasRole("MASTER")
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)
