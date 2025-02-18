@@ -22,13 +22,12 @@ public class Product extends BaseEntity {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    // 나중에 storeId, categoryId 외래 키 설정 수정하기
     @Column(name = "store_id", nullable = false)
     private UUID storeId;
 
     @Column(name = "category_id", nullable = false)
     private UUID categoryId;
-
-    // 나중에 외래 키 설정 수정하기
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "store_id", nullable = false)
