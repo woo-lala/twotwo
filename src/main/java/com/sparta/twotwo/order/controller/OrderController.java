@@ -2,6 +2,7 @@ package com.sparta.twotwo.order.controller;
 
 
 import com.sparta.twotwo.common.response.ApiResponse;
+import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import com.sparta.twotwo.order.service.OrderService;
@@ -48,13 +49,17 @@ public class OrderController {
 
     /**
      * Order 생성
-     * @param requestDto
+     * @param orderRequestDto
+     * @param orderProductRequestDto
      * @return
      */
-    @PostMapping("/orders")
-    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto requestDto){
-        log.info("requestDto: {}", requestDto);
-        OrderResponseDto orderResponseDto = orderService.saveOrder(requestDto);
+    @PostMapping("/orders/{store_id}")
+    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
+            @PathVariable("sotre_id") UUID store_id,
+            @RequestBody OrderRequestDto orderRequestDto,
+            @RequestBody OrderProductRequestDto orderProductRequestDto){
+        log.info("requestDto: {}", orderRequestDto);
+        OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, orderProductRequestDto);
 
         return new ResponseEntity<>(ApiResponse.success(orderResponseDto), HttpStatus.OK);
     }

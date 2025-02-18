@@ -18,7 +18,7 @@ public class OrderResponseDto {
 
     private Long memberId;
     private UUID order_id;
-    private Long storeId;
+    private UUID storeId;
     private OrderType order_type;
     private Long price;
 

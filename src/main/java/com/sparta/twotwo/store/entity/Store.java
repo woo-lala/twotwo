@@ -4,11 +4,13 @@ import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.members.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name="p_store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

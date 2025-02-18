@@ -5,10 +5,13 @@ import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
+import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
 import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.repository.OrderRepository;
+import com.sparta.twotwo.store.entity.Store;
+import com.sparta.twotwo.store.entity.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,13 +29,16 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final StoreRepository storeRepository;
 
-    public OrderResponseDto saveOrder(OrderRequestDto requestDto) {
+    public OrderResponseDto saveOrder(OrderRequestDto orderRequestDto, OrderProductRequestDto orderProductRequestDto) {
         //TODO member가 없을시 예외
-        // ceratedBy
-        Member findMember = memberRepository.findById(requestDto.getMemberId()).orElseThrow();
+        Member findMember = memberRepository.findById(orderRequestDto.getMemberId()).orElseThrow();
+        Store findStore = storeRepository.findById(orderRequestDto.getStoreId())
+                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
 
-        Order savedOrder = orderRepository.save(requestDto.toEntity(findMember));
+
+        Order savedOrder = orderRepository.save(orderRequestDto.toEntity(findMember, findStore));
         return savedOrder.toResponseDto();
     }
 
