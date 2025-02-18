@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class SignupRequestDto {
     @NotBlank
-    @Pattern(regexp = "^[a-z0-9]{4,10}$")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]{4,10}$")
     private String username;
     @NotBlank
     private String nickname;
@@ -19,6 +19,6 @@ public class SignupRequestDto {
     private String email;
     private boolean is_public;
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+-=]{8,15}$")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+-=])[a-zA-Z0-9!@#$%^&*()_+-=]{8,15}$")
     private String password;
 }
