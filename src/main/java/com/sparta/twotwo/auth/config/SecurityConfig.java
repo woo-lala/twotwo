@@ -34,6 +34,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizationRequests) -> {
             authorizationRequests
+                    /*
+                    권한 설정 설명 : 기본적으로는 CUSTOMER 권한을 가지고 있고, 위와 같이 각 권한에 맞게 메소드와 URL 경로를 지정하고 권한 설정
+                                 권한이 다중일때는 hasAnyRole, 단일일때는 hasRole 로 설정
+                     */
                     //member
                     .requestMatchers("/api/members/signup").permitAll()
                     .requestMatchers("/api/members/login").permitAll()
@@ -42,6 +46,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "MANAGER","CUSTOMER")
                     .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
                     //
+
+
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)
