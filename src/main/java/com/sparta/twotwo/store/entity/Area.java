@@ -3,6 +3,7 @@ package com.sparta.twotwo.store.entity;
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
@@ -27,9 +28,18 @@ public class Area extends BaseEntity {
     private String emd;
 
     @Column(name = "adm_code", nullable = false)
-    private String adm_code;
+    private String admCode;
 
     @Column(name = "zip_num", nullable = false)
-    private String zip_num;
+    private String zipNum;
+
+    @Builder
+    public Area(String sido, String sigg, String emd, String admCode, String zipNum) {
+        this.sido = sido;
+        this.sigg = sigg;
+        this.emd = emd;
+        this.admCode = admCode;
+        this.zipNum = zipNum;
+    }
 
 }
