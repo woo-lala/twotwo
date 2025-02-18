@@ -3,6 +3,7 @@ package com.sparta.twotwo.auth.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.twotwo.auth.dto.LoginDto;
 import com.sparta.twotwo.auth.jwt.JwtUtil;
+import com.sparta.twotwo.auth.service.MemberDetails;
 import com.sparta.twotwo.members.entity.Member;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,12 +51,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        Member member = (Member) authResult.getPrincipal();
+        log.info("로그인 성공 및 jwt 토큰 생성");
+        MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
+        Member member = memberDetails.getMember();
 
         String token = jwtUtil.createToken(member);
         response.setHeader("Authorization", "Bearer " + token);
-
-        this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 
     @Override
