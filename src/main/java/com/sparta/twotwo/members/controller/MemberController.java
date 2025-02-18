@@ -38,4 +38,12 @@ public class MemberController {
         return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
 
+    @GetMapping("/{member_id}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> getMember(@PathVariable("member_id") Long member_id) {
+        Member member = memberService.getMember(member_id);
+        MemberResponseDto response = new MemberResponseDto(member);
+
+        return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.sparta.twotwo.members.service;
 
 import com.sparta.twotwo.auth.util.AuthorityUtil;
+import com.sparta.twotwo.common.exception.ErrorCode;
+import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.dto.MemberResponseDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
@@ -37,11 +39,23 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    public List<Member> getMembers() {
+
+        return memberRepository.findAll();
+    }
+
+    public Member getMember(Long memberId) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        return optionalMember.orElseThrow(() ->
+             new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
     public void existEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
 
         if (member.isPresent()) {
-            throw new IllegalArgumentException("중복된 이메일입니다.");
+            throw new TwotwoApplicationException(ErrorCode.MEMBER_EMAIL_EXIST);
         }
     }
 
@@ -49,12 +63,9 @@ public class MemberService {
         Optional<Member> member = memberRepository.findByUsername(username);
 
         if (member.isPresent()) {
-            throw new IllegalArgumentException("중복된 이름입니다.");
+            throw new TwotwoApplicationException(ErrorCode.MEMBER_USERNAME_EXIST);
         }
     }
 
-    public List<Member> getMembers() {
 
-        return memberRepository.findAll();
-    }
 }
