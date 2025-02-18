@@ -6,6 +6,7 @@ import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.members.entity.MemberStatusEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,6 +59,12 @@ public class MemberService {
         Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
 
         return memberRepository.save(member);
+    }
+
+    public void deleteMember(Long memberId) {
+        Member member = findMember(memberId);
+        member.setMemberStatus(MemberStatusEnum.DELETE);
+        memberRepository.save(member);
     }
 
     public void existEmail(String email) {

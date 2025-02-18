@@ -55,4 +55,9 @@ public class MemberController {
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
     }
 
+    @DeleteMapping("{member_id}")
+    public void deleteMember(@PathVariable("member_id") Long member_id) {
+
+        memberService.deleteMember(member_id);
+    }
 }
