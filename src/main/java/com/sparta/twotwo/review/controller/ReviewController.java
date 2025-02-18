@@ -4,6 +4,7 @@ import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
 import com.sparta.twotwo.review.service.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReviewResponseDto>> createReview(
+            @Valid
             @RequestBody CreateReviewRequestDto requestDto
     ) {
         ReviewResponseDto responseDto = reviewService.createReview(requestDto);
