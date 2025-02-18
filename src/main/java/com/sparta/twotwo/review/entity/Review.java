@@ -3,6 +3,7 @@ package com.sparta.twotwo.review.entity;
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.order.entity.Order;
+import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,12 @@ public class Review extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    public Review(CreateReviewRequestDto requestDto, Member member, Order order) {
+        this.rating = requestDto.getRating();
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.member = member;
+        this.order = order;
+    }
 }
