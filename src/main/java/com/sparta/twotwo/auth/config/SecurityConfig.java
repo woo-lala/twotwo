@@ -2,8 +2,11 @@ package com.sparta.twotwo.auth.config;
 
 import com.sparta.twotwo.auth.jwt.JwtUtil;
 import com.sparta.twotwo.auth.jwt.filter.JwtAuthenticationFilter;
+import com.sparta.twotwo.auth.jwt.filter.JwtAuthorizationFilter;
+import com.sparta.twotwo.auth.util.AuthorityUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,15 +14,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final AuthorityUtil authorityUtil;
 
-    public SecurityConfig(JwtUtil jwtUtil) {
+    public SecurityConfig(JwtUtil jwtUtil, AuthorityUtil authorityUtil) {
         this.jwtUtil = jwtUtil;
+        this.authorityUtil = authorityUtil;
     }
 
     @Bean
@@ -30,6 +36,7 @@ public class SecurityConfig {
             authorizationRequests
                     .requestMatchers("/api/members/signup").permitAll()
                     .requestMatchers("/api/members/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -49,10 +56,12 @@ public class SecurityConfig {
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtUtil);
+            JwtAuthorizationFilter authorizationFilter = new JwtAuthorizationFilter(jwtUtil, authorityUtil);
             authenticationFilter.setFilterProcessesUrl("/api/members/login");
 
             builder
-                    .addFilter(authenticationFilter);
+                    .addFilter(authenticationFilter)
+                    .addFilterAfter(authorizationFilter, AuthenticationFilter.class);
         }
     }
 }

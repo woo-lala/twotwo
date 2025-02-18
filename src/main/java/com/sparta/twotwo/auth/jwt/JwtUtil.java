@@ -1,6 +1,8 @@
 package com.sparta.twotwo.auth.jwt;
 
 import com.sparta.twotwo.members.entity.Member;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -28,7 +30,6 @@ public class JwtUtil {
     @Getter
     private final String secretKey = String.valueOf(key);
 
-    public static final Logger logger = LoggerFactory.getLogger("Jwt 관련 로그");
 
     public String createToken(Member member) {
         Date date = new Date();
@@ -47,26 +48,11 @@ public class JwtUtil {
                 .compact();
     }
 
-//    public void addJwtCookie(String token, HttpServletResponse response) {
-//        try {
-//            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20");
-//            Cookie cookie = new Cookie("Authorization", "Bearer " + token);
-//
-//            cookie.setPath("/");
-//            response.addCookie(cookie);
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//        }
-//    }
-//
-//    public String substringToken(String tokenValue) {
-//        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith("Bearer ")) {
-//            return tokenValue.substring(7);
-//        }
-//        logger.error("Not Found Token");
-//        throw new NullPointerException("Not Found Token");
-//    }
+    public Jws<Claims> getClaims(String token) {
 
-
-
+        return Jwts.parserBuilder()
+                .setSigningKey(key
+                ).build()
+                .parseClaimsJws(token);
+    }
 }

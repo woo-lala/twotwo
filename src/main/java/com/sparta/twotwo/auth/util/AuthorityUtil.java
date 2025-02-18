@@ -36,7 +36,7 @@ public class AuthorityUtil {
     public List<GrantedAuthority> createAuthorities(List<String> roles) {
 
         return roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
     }
 }
