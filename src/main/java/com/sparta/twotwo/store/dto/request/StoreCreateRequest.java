@@ -14,7 +14,7 @@ public class StoreCreateRequest {
 
     @NotNull(message = "가게명을 작성해주세요.")
     @Size(max = 50, message = "가게명은 50자를 초과할 수 없습니다.")
-    public final String name;
+    private final String name;
 
     @NotNull
     private final Long memberId;
