@@ -3,6 +3,7 @@ package com.sparta.twotwo.store.dto.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalTime;
@@ -34,6 +35,7 @@ public class StoreCreateRequest {
     @NotNull(message = "운영 종료 시간을 작성해주세요.")
     private final LocalTime operationClosedAt;
 
+    @Builder
     public StoreCreateRequest(String name, Long memberId, AddressRequest address, UUID categoryId, String imageUrl, LocalTime operationStartedAt, LocalTime operationClosedAt) {
         this.name = name;
         this.memberId = memberId;
@@ -43,4 +45,5 @@ public class StoreCreateRequest {
         this.operationStartedAt = operationStartedAt;
         this.operationClosedAt = operationClosedAt;
     }
+
 }
