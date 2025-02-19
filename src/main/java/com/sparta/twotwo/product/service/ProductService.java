@@ -2,6 +2,7 @@ package com.sparta.twotwo.product.service;
 
 import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.ai.repository.AIRequestLogRepository;
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.product.dto.*;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
@@ -28,12 +29,12 @@ public class ProductService {
     private final AIRequestLogRepository aiRequestLogRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+    private Long authenticateMember() {
+        Long memberId = SecurityUtil.getMemberIdFromSecurityContext();
+        if (memberId == null) {
             throw new IllegalStateException("로그인한 사용자만 접근할 수 있습니다.");
         }
-        return Long.parseLong(authentication.getName());
+        return memberId;
     }
 
     @Transactional
@@ -41,7 +42,11 @@ public class ProductService {
         Store store = storeRepository.findById(requestDto.getStoreId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + requestDto.getStoreId()));
 
-        Long createdBy = getCurrentUserId();
+        Long createdBy = authenticateMember();
+
+        if (requestDto.getPrice() < 0) {
+            throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+        }
 
         Product product = new Product();
         product.setStore(store);
@@ -118,7 +123,11 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
 
-        Long updatedBy = getCurrentUserId();
+        Long updatedBy = authenticateMember();
+
+        if (requestDto.getPrice() < 0) {
+            throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+        }
 
         if (requestDto.getDescriptionId() != null) {
             AIRequestLog descriptionLog = aiRequestLogRepository.findById(requestDto.getDescriptionId())
@@ -150,7 +159,7 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
 
-        Long deletedBy = getCurrentUserId();
+        Long deletedBy = authenticateMember();
 
         product.setDeletedBy(deletedBy);
         product.setDeletedAt(LocalDateTime.now());
