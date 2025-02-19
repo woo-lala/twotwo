@@ -6,6 +6,8 @@ import com.sparta.twotwo.product.dto.ProductResponseDto;
 import com.sparta.twotwo.product.dto.StoreProductResponseDto;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
+import com.sparta.twotwo.store.entity.Store;
+import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,44 +16,50 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final StoreRepository storeRepository;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
+        Store store = storeRepository.findById(requestDto.getStoreId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + requestDto.getStoreId()));
+
         Product product = new Product();
-        product.setStoreId(requestDto.getStoreId());
+        product.setStore(store);
         product.setCategoryId(requestDto.getCategoryId());
         product.setDescription(requestDto.getDescription());
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setHidden(requestDto.isHidden());
+        product.setIsHidden(requestDto.isHidden());
 
         Product savedProduct = productRepository.save(product);
 
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
-                .storeId(savedProduct.getStoreId())
+                .storeId(savedProduct.getStore().getId())
                 .categoryId(savedProduct.getCategoryId())
                 .description(savedProduct.getDescription())
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
                 .imageUrl(savedProduct.getImageUrl())
-                .isHidden(savedProduct.isHidden())
-                .createdAt(savedProduct.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .isHidden(savedProduct.getIsHidden())
+                .createdAt(savedProduct.getCreatedAt().format(FORMATTER))
                 .createdBy(savedProduct.getCreatedBy())
                 .build();
     }
 
     @Transactional(readOnly = true)
     public StoreProductResponseDto getProductsByStoreId(UUID storeId) {
-        List<Product> products = productRepository.findByStoreId(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + storeId));
+        List<Product> products = productRepository.findByStore(store);
         List<ProductListResponseDto> productList = new ArrayList<>();
 
         for (Product product : products) {
@@ -63,16 +71,38 @@ public class ProductService {
                     .productName(product.getProductName())
                     .price(product.getPrice())
                     .imageUrl(product.getImageUrl())
-                    .isHidden(product.isHidden())
-                    .createdAt(product.getCreatedAt())
+                    .isHidden(product.getIsHidden())
+                    .createdAt(product.getCreatedAt().format(FORMATTER))
                     .build();
 
             productList.add(dto);
         }
 
         return StoreProductResponseDto.builder()
-                .storeId(storeId)
+                .storeId(store.getId())
                 .products(productList)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ProductResponseDto getProductById(UUID productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
+
+        return ProductResponseDto.builder()
+                .productId(product.getId())
+                .storeId(product.getStore().getId())
+                .categoryId(product.getCategoryId())
+                .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
+                .description(product.getDescription())
+                .productName(product.getProductName())
+                .price(product.getPrice())
+                .imageUrl(product.getImageUrl())
+                .isHidden(product.getIsHidden())
+                .createdAt(product.getCreatedAt().format(FORMATTER))
+                .createdBy(product.getCreatedBy())
+                .updatedAt(product.getUpdatedAt().format(FORMATTER))
+                .updatedBy(product.getUpdatedBy())
                 .build();
     }
 }
