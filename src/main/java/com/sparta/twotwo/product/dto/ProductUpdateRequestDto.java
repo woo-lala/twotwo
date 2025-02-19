@@ -1,10 +1,12 @@
 package com.sparta.twotwo.product.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
 public class ProductUpdateRequestDto {
     private UUID categoryId;
     private UUID descriptionId;
