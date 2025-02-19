@@ -1,6 +1,7 @@
 package com.sparta.twotwo.auth.util;
 
 import com.sparta.twotwo.members.entity.RolesEnum;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -10,8 +11,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class AuthorityUtil {
-    private final static String masterEmail = "master@email.com";
-    private final static String managerEmail = "manager@email.com";
+    @Value("${jwt-master-email}")
+    private String masterEmail;
+    @Value("${jwt-manager-email}")
+    private String managerEmail;
     private final static String ownerEmail = "owner@email.com";
 
 

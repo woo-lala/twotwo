@@ -45,10 +45,14 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
-                    .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "CUSTOMER")
-                    //
+                    //store
 
+                    //products
 
+                    //orders
+
+                    //review
+                    .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)
