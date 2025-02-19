@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -17,6 +18,9 @@ public class ReviewResponseDto {
     private String title;
     private String content;
     private int rating;
+    private boolean isHidden;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ReviewResponseDto(Review review) {
         this.reviewId = review.getReview_id();
@@ -25,5 +29,8 @@ public class ReviewResponseDto {
         this.title = review.getTitle();
         this.content = review.getContent();
         this.rating = review.getRating();
+        this.isHidden = review.getIsHidden();
+        this.createdAt = review.getCreatedAt();
+        this.updatedAt = review.getUpdatedAt();
     }
 }
