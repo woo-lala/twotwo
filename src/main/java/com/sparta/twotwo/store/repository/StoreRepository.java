@@ -12,4 +12,6 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     Page<Store> findStoresByCategoryId(UUID categoryId, Pageable pageable);
 
+    Optional<Store> findByName(String name);
+
 }
