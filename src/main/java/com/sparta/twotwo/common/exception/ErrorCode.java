@@ -22,6 +22,7 @@ public enum ErrorCode {
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "지정한 리소스를 찾을 수 없습니다."),
 
     MEMBER_EMAIL_EXIST(HttpStatus.CONFLICT, "중복된 이메일 입니다."),
