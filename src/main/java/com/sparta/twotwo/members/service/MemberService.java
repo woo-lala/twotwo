@@ -1,6 +1,7 @@
 package com.sparta.twotwo.members.service;
 
 import com.sparta.twotwo.auth.util.AuthorityUtil;
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.dto.MemberRequestDto;
@@ -66,6 +67,8 @@ public class MemberService {
     public void deleteMember(Long memberId) {
         Member member = findMember(memberId);
         member.setMemberStatus(MemberStatusEnum.DELETE);
+        member.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
+        System.out.println("token id: " + SecurityUtil.getMemberIdFromSecurityContext());
         memberRepository.save(member);
     }
 

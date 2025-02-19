@@ -55,10 +55,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return jwtUtil.getClaims(token).getBody();
     }
 
-    private void setAuthentication(Map<String, Object> claims) {
-        String username = claims.get("username").toString();
+    private void setAuthentication(Map<String, Object> claims) { //SecurityContext 에 member_id 와 roles 저장
+//        String username = claims.get("username").toString();
+        Long memberId = Long.valueOf(claims.get("member_id").toString());
         List<GrantedAuthority> authorities = authorityUtil.createAuthorities((List<String>) claims.get("roles"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(memberId, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
