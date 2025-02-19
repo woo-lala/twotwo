@@ -3,9 +3,12 @@ package com.sparta.twotwo.store.controller;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.common.response.ApiResponse;
+import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
 import com.sparta.twotwo.store.dto.response.StoreDetailResponse;
 import com.sparta.twotwo.store.dto.response.StoreResponse;
+import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.service.StoreService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +60,18 @@ public class StoreController {
     ) throws Exception {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(ApiResponse.success(storeService.getStoresByCategory(categoryId, pageable).map(StoreResponse::from)));
+    }
+
+    /**
+     * 가게 등록
+     * 사용권한 (
+     */
+    @PostMapping("/stores")
+    public ResponseEntity<ApiResponse<StoreDetailResponse>> createStore(
+            @Valid @RequestBody StoreCreateRequest request
+    ) throws Exception {
+        Store store = storeService.saveStore(request);
+        return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 
 
