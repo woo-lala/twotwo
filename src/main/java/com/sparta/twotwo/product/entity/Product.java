@@ -52,7 +52,4 @@ public class Product extends BaseEntity {
 
     @Column(name = "image_url", length = 200)
     private String imageUrl;
-
-    @Column(name = "is_hidden", nullable = false)
-    private boolean isHidden = false;
 }

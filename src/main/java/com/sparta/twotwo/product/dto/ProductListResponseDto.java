@@ -3,7 +3,6 @@ package com.sparta.twotwo.product.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -17,5 +16,5 @@ public class ProductListResponseDto {
     private int price;
     private String imageUrl;
     private boolean isHidden;
-    private LocalDateTime createdAt;
+    private String createdAt;
 }

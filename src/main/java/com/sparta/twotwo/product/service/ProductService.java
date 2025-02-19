@@ -14,13 +14,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
@@ -31,7 +31,7 @@ public class ProductService {
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setHidden(requestDto.isHidden());
+        product.setIsHidden(requestDto.isHidden());
 
         Product savedProduct = productRepository.save(product);
 
@@ -43,8 +43,8 @@ public class ProductService {
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
                 .imageUrl(savedProduct.getImageUrl())
-                .isHidden(savedProduct.isHidden())
-                .createdAt(savedProduct.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .isHidden(savedProduct.getIsHidden())
+                .createdAt(savedProduct.getCreatedAt().format(FORMATTER))
                 .createdBy(savedProduct.getCreatedBy())
                 .build();
     }
@@ -63,8 +63,8 @@ public class ProductService {
                     .productName(product.getProductName())
                     .price(product.getPrice())
                     .imageUrl(product.getImageUrl())
-                    .isHidden(product.isHidden())
-                    .createdAt(product.getCreatedAt())
+                    .isHidden(product.getIsHidden())
+                    .createdAt(product.getCreatedAt().format(FORMATTER))
                     .build();
 
             productList.add(dto);

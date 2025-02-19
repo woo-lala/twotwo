@@ -38,7 +38,4 @@ public class AIRequestLog extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AIRequestStatus status;
-
-    @Column(name = "is_hidden", nullable = false)
-    private boolean isHidden = false;
 }
