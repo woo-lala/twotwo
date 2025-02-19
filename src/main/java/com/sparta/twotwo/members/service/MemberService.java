@@ -1,6 +1,7 @@
 package com.sparta.twotwo.members.service;
 
 import com.sparta.twotwo.auth.util.AuthorityUtil;
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.dto.MemberRequestDto;
@@ -9,10 +10,14 @@ import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.entity.MemberStatusEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,13 +42,14 @@ public class MemberService {
         existUsername(username);
 
         Member member = new Member(username, nickname, email, password, roles, is_public);
+        member.setCreatedBy(member.getMember_id());
 
         memberRepository.save(member);
     }
 
-    public List<Member> getMembers() {
+    public Page<Member> getMembers(Pageable pageable) {
 
-        return memberRepository.findAll();
+        return memberRepository.findAll(pageable);
     }
 
     public Member getMember(Long memberId) {
@@ -55,6 +61,9 @@ public class MemberService {
     public Member updateMember(Long memberId, MemberRequestDto requestDto) {
         Member member = findMember(memberId);
 
+        member.setUpdatedBy(authenticateMember());
+        member.setUpdatedAt(LocalDateTime.now());
+
         Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
         Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
 
@@ -63,7 +72,13 @@ public class MemberService {
 
     public void deleteMember(Long memberId) {
         Member member = findMember(memberId);
+
         member.setMemberStatus(MemberStatusEnum.DELETE);
+        member.setDeletedBy(authenticateMember());
+        member.setDeletedAt(LocalDateTime.now());
+
+        System.out.println("token id: " + SecurityUtil.getMemberIdFromSecurityContext());
+
         memberRepository.save(member);
     }
 
@@ -88,6 +103,10 @@ public class MemberService {
 
         return optionalMember.orElseThrow(() ->
                 new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Long authenticateMember() {
+        return SecurityUtil.getMemberIdFromSecurityContext();
     }
 
 }

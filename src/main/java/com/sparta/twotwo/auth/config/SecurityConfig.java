@@ -43,9 +43,9 @@ public class SecurityConfig {
                     .requestMatchers("/api/members/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
-                    .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "MANAGER","CUSTOMER")
-                    .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
-                    .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "CUSTOMER")
                     //
 
 
