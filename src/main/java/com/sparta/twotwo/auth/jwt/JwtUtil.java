@@ -25,6 +25,7 @@ public class JwtUtil {
     public String createToken(Member member) {
         Date date = new Date();
         Map<String, Object> claims = new HashMap<>();
+        claims.put("member_id", member.getMember_id());
         claims.put("username", member.getUsername());
         claims.put("roles",  member.getRoles());
         String subject = member.getUsername();
