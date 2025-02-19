@@ -9,6 +9,8 @@ import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.entity.MemberStatusEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +43,9 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<Member> getMembers() {
+    public Page<Member> getMembers(Pageable pageable) {
 
-        return memberRepository.findAll();
+        return memberRepository.findAll(pageable);
     }
 
     public Member getMember(Long memberId) {

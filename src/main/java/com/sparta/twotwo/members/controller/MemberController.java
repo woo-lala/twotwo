@@ -8,6 +8,9 @@ import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +32,12 @@ public class MemberController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> gerMembers() {
-        List<Member> members = memberService.getMembers();
-        List<MemberResponseDto> responseDto = members.stream()
-                .map(MemberResponseDto::new)
-                .toList();
+    public ResponseEntity<ApiResponse<Page<MemberResponseDto>>> gerMembers(@RequestParam(defaultValue = "10") int size,
+                                                                           @RequestParam(defaultValue = "1") int page) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Member> members = memberService.getMembers(pageable);
+
+        Page<MemberResponseDto> responseDto =  members.map(MemberResponseDto::new);
 
         return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
