@@ -1,15 +1,10 @@
 package com.sparta.twotwo.store.dto.response;
 
-import com.sparta.twotwo.members.entity.Member;
-import com.sparta.twotwo.product.entity.Product;
-import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter

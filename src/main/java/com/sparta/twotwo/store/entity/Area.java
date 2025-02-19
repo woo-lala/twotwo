@@ -4,11 +4,13 @@ import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 
+@Getter
 @Entity
 @Table(name = "p_area")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

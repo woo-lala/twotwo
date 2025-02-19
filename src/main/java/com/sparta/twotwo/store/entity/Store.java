@@ -10,7 +10,6 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Entity
 @Table(name="p_store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
