@@ -25,6 +25,10 @@ public class StoreService {
         return storeRepository.findAll(pageable);
     }
 
+    public Optional<Store> getStoreDetails(UUID storeId) {
+        return storeRepository.findById(storeId);
+    }
+
     public Page<Store> getStoresByCategory(UUID categoryId, Pageable pageable) {
         Optional<StoreCategory> category = storeCategoryRepository.findById(categoryId);
         if (category.isEmpty()) {
