@@ -6,6 +6,8 @@ import com.sparta.twotwo.product.dto.ProductResponseDto;
 import com.sparta.twotwo.product.dto.StoreProductResponseDto;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
+import com.sparta.twotwo.store.entity.Store;
+import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +22,16 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final StoreRepository storeRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
+        Store store = storeRepository.findById(requestDto.getStoreId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + requestDto.getStoreId()));
+
         Product product = new Product();
-        product.setStoreId(requestDto.getStoreId());
+        product.setStore(store);
         product.setCategoryId(requestDto.getCategoryId());
         product.setDescription(requestDto.getDescription());
         product.setProductName(requestDto.getProductName());
@@ -37,7 +43,7 @@ public class ProductService {
 
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
-                .storeId(savedProduct.getStoreId())
+                .storeId(savedProduct.getStore().getId())
                 .categoryId(savedProduct.getCategoryId())
                 .description(savedProduct.getDescription())
                 .productName(savedProduct.getProductName())
@@ -51,7 +57,9 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public StoreProductResponseDto getProductsByStoreId(UUID storeId) {
-        List<Product> products = productRepository.findByStoreId(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + storeId));
+        List<Product> products = productRepository.findByStore(store);
         List<ProductListResponseDto> productList = new ArrayList<>();
 
         for (Product product : products) {
@@ -71,7 +79,7 @@ public class ProductService {
         }
 
         return StoreProductResponseDto.builder()
-                .storeId(storeId)
+                .storeId(store.getId())
                 .products(productList)
                 .build();
     }

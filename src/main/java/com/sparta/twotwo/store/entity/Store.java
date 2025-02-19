@@ -2,11 +2,14 @@ package com.sparta.twotwo.store.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,7 +21,7 @@ public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "BINARY(16)")
-    private UUID Id;
+    private UUID id;
 
     @Column(name="name", unique = true)
     private String name;
@@ -38,6 +41,8 @@ public class Store extends BaseEntity {
 //    @OneToMany(mappedBy="product")
 //    @JoinColumn(name="product_id")
 //    private List<Product> products = new ArrayList<>();
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
 
     @Column(name="image_url")
     private String imageUrl;
