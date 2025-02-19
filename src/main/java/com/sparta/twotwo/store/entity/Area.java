@@ -33,7 +33,7 @@ public class Area extends BaseEntity {
     @Column(name = "adm_code", nullable = false)
     private String admCode;
 
-    @Column(name = "zip_num", nullable = false)
+    @Column(name = "zip_num", nullable = false, unique = true)
     private String zipNum;
 
     @Builder

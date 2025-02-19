@@ -38,9 +38,6 @@ public class Store extends BaseEntity {
     @JoinColumn(name="store_category_id", nullable = false)
     private StoreCategory category;
 
-//    @OneToMany(mappedBy="product")
-//    @JoinColumn(name="product_id")
-//    private List<Product> products = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
@@ -63,7 +60,7 @@ public class Store extends BaseEntity {
     private Integer reviewCount;
 
     @Builder
-    public Store(Member member, Address address, String name, Long minOrderPrice, LocalTime operationClosedAt, LocalTime operationStartedAt, StoreCategory category, BigDecimal rating, Integer reviewCount) {
+    public Store(Member member, Address address, String name, Long minOrderPrice, LocalTime operationClosedAt, LocalTime operationStartedAt, StoreCategory category, BigDecimal rating, Integer reviewCount, String imageUrl) {
         this.address = address;
         this.minOrderPrice = minOrderPrice;
         this.member = member;
@@ -71,6 +68,7 @@ public class Store extends BaseEntity {
         this.operationClosedAt = operationClosedAt;
         this.operationStartedAt = operationStartedAt;
         this.name = name;
+        this.imageUrl = imageUrl;
         this.rating = rating;
         this.reviewCount = reviewCount;
     }

@@ -27,6 +27,7 @@ public enum ErrorCode {
 
     MEMBER_EMAIL_EXIST(HttpStatus.CONFLICT, "중복된 이메일 입니다."),
     MEMBER_USERNAME_EXIST(HttpStatus.CONFLICT, "중복된 아이디 입니다."),
+    STORE_NAME_EXIST(HttpStatus.CONFLICT, "중복된 가게명 입니다."),
     CONFLICT(HttpStatus.CONFLICT, "서버가 요청을 수행하는 중에 충돌이 발생하였습니다.,"),
 
     //5XX
