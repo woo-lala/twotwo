@@ -3,6 +3,7 @@ package com.sparta.twotwo.review.controller;
 import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
+import com.sparta.twotwo.review.dto.UpdateReviewRequestDto;
 import com.sparta.twotwo.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,16 @@ public class ReviewController {
     @GetMapping("/{review_id}")
     public ResponseEntity<ApiResponse<ReviewResponseDto>> getReview(@PathVariable("review_id") UUID reviewId) {
         ReviewResponseDto review = reviewService.getReview(reviewId);
+        return new ResponseEntity<>(ApiResponse.success(review), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{review_id}")
+    public ResponseEntity<ApiResponse<ReviewResponseDto>> updateReview(
+            @Valid
+            @RequestBody UpdateReviewRequestDto requestDto,
+            @PathVariable("review_id") UUID reviewId
+            ) {
+        ReviewResponseDto review = reviewService.updateReview(reviewId, requestDto);
         return new ResponseEntity<>(ApiResponse.success(review), HttpStatus.OK);
     }
 }
