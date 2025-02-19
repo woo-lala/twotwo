@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizationRequests) -> {
             authorizationRequests
+                    .requestMatchers("/api/products/**").permitAll()
                     /*
                     권한 설정 설명 : 기본적으로는 CUSTOMER 권한을 가지고 있고, 위와 같이 각 권한에 맞게 메소드와 URL 경로를 지정하고 권한 설정
                                  권한이 다중일때는 hasAnyRole, 단일일때는 hasRole 로 설정
