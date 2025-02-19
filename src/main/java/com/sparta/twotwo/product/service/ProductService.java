@@ -125,6 +125,10 @@ public class ProductService {
 
         Long updatedBy = authenticateMember();
 
+        if (requestDto.getPrice() < 0) {
+            throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+        }
+
         if (requestDto.getDescriptionId() != null) {
             AIRequestLog descriptionLog = aiRequestLogRepository.findById(requestDto.getDescriptionId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 설명 로그가 존재하지 않습니다: " + requestDto.getDescriptionId()));
