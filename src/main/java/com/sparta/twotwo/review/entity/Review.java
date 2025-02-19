@@ -45,4 +45,10 @@ public class Review extends BaseEntity {
         this.member = member;
         this.order = order;
     }
+
+    public void update(Review review) {
+        this.rating = review.rating;
+        this.title = review.title;
+        this.content = review.content;
+    }
 }

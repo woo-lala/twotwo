@@ -8,6 +8,7 @@ import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.repository.OrderRepository;
 import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
+import com.sparta.twotwo.review.dto.UpdateReviewRequestDto;
 import com.sparta.twotwo.review.entity.Review;
 import com.sparta.twotwo.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
@@ -54,6 +55,31 @@ public class ReviewService {
         Review review = findReview(reviewId);
 
         return new ReviewResponseDto(review);
+    }
+
+    @Transactional
+    public ReviewResponseDto updateReview(UUID reviewId, UpdateReviewRequestDto requestDto) {
+        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
+        Review review = findReview(reviewId);
+
+        review.setRating(requestDto.getRating() != null ? requestDto.getRating() : review.getRating());
+        review.setTitle(requestDto.getTitle() != null ? requestDto.getTitle() : review.getTitle());
+        review.setContent(requestDto.getContent() != null ? requestDto.getContent() : review.getContent());
+
+        review.update(review);
+
+        return new ReviewResponseDto(review);
+    }
+
+    @Transactional
+    public void deleteReview(UUID reviewId) {
+        Review review = findReview(reviewId);
+
+        // MANAGER, MASTER 를 제외한 권한은
+        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
+        review.setIsDeleted(true);
+        // deleted_at, deleted_by 로직 추가
+
     }
 
     private Member findMember(Long memberId) {
