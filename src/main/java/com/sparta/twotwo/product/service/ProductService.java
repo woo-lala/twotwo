@@ -75,4 +75,26 @@ public class ProductService {
                 .products(productList)
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public ProductResponseDto getProductById(UUID productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
+
+        return ProductResponseDto.builder()
+                .productId(product.getId())
+                .storeId(product.getStore().getId())
+                .categoryId(product.getCategoryId())
+                .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
+                .description(product.getDescription())
+                .productName(product.getProductName())
+                .price(product.getPrice())
+                .imageUrl(product.getImageUrl())
+                .isHidden(product.getIsHidden())
+                .createdAt(product.getCreatedAt().format(FORMATTER))
+                .createdBy(product.getCreatedBy())
+                .updatedAt(product.getUpdatedAt().format(FORMATTER))
+                .updatedBy(product.getUpdatedBy())
+                .build();
+    }
 }
