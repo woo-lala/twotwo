@@ -2,6 +2,7 @@ package com.sparta.twotwo.product.entity;
 
 import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.common.auditing.BaseEntity;
+import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,16 +23,13 @@ public class Product extends BaseEntity {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    // 나중에 storeId, categoryId 외래 키 설정 수정하기
-    @Column(name = "store_id", nullable = false)
-    private UUID storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
+    // 나중에 categoryId 외래 키 설정 수정하기
     @Column(name = "category_id", nullable = false)
     private UUID categoryId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id", nullable = false)
-//    private Store store;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "category_id", nullable = false)
@@ -52,7 +50,4 @@ public class Product extends BaseEntity {
 
     @Column(name = "image_url", length = 200)
     private String imageUrl;
-
-    @Column(name = "is_hidden", nullable = false)
-    private boolean isHidden = false;
 }

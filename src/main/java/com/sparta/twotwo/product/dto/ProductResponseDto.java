@@ -19,4 +19,6 @@ public class ProductResponseDto {
     private boolean isHidden;
     private String createdAt;
     private Long createdBy;
+    private String updatedAt;
+    private Long updatedBy;
 }
