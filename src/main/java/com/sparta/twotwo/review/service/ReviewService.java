@@ -71,6 +71,17 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
+    @Transactional
+    public void deleteReview(UUID reviewId) {
+        Review review = findReview(reviewId);
+
+        // MANAGER, MASTER 를 제외한 권한은
+        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
+        review.setIsDeleted(true);
+        // deleted_at, deleted_by 로직 추가
+
+    }
+
     private Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));

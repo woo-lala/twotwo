@@ -56,4 +56,9 @@ public class ReviewController {
         ReviewResponseDto review = reviewService.updateReview(reviewId, requestDto);
         return new ResponseEntity<>(ApiResponse.success(review), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{review_id}")
+    public void deleteReview(@PathVariable("review_id") UUID reviewId) {
+        reviewService.deleteReview(reviewId);
+    }
 }
