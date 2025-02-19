@@ -5,6 +5,7 @@ import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
+import com.sparta.twotwo.store.dto.request.StoreUpdateRequest;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
@@ -46,19 +47,11 @@ public class StoreService {
 
     @Transactional
     public Store saveStore(final StoreCreateRequest request) {
-        //member 존재하는지 확인
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
 
-        //주소 저장
+        Member member = getMemberOrException(request.getMemberId());
         final Address address = addressService.saveAddress(request.getAddress());
-
-        //가게 생성
-        StoreCategory category = storeCategoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.NOT_FOUND));
-
-        //가게 중복 이름 확인
-        storeRepository.findByName(request.getName()).ifPresent( it -> {
-                    throw new TwotwoApplicationException(ErrorCode.STORE_NAME_EXIST);
-                });
+        StoreCategory category = getCategoryOrException(request.getCategoryId());
+        validateStoreName(request.getName());
 
         Store newStore = Store.builder()
                 .name(request.getName())
@@ -74,6 +67,57 @@ public class StoreService {
         return storeRepository.save(newStore);
 
     }
+
+    @Transactional
+    public Store updateStore(UUID storeId, StoreUpdateRequest request) {
+
+        //멤버 가져오기
+        Member member = getMemberOrException(request.getMemberId());
+
+        //가게 존재하는지 확인
+        Store store = getStoreOrException(storeId);
+
+        validateStoreName(request.getName());
+
+        Optional.ofNullable(request.getCategoryId()).ifPresent(categoryId -> {
+                    StoreCategory category = getCategoryOrException(categoryId);
+                    store.setCategory(category);
+                }
+        );
+
+        Optional.ofNullable(request.getAddress()).ifPresent(requestAddress -> {
+                    Address updatedAddress = addressService.updateAddress(requestAddress);
+                    store.setAddress(updatedAddress);
+                }
+        );
+
+        Optional.ofNullable(request.getName()).ifPresent(store::setName);
+        Optional.ofNullable(request.getMinOrderPrice()).ifPresent(store::setMinOrderPrice);
+        Optional.ofNullable(request.getOperationStartedAt()).ifPresent(store::setOperationStartedAt);
+        Optional.ofNullable(request.getOperationClosedAt()).ifPresent(store::setOperationClosedAt);
+        Optional.ofNullable(request.getImageUrl()).ifPresent(store::setImageUrl);
+
+        return storeRepository.save(store);
+    }
+
+    private void validateStoreName(String storeName) {
+        storeRepository.findByName(storeName).ifPresent(it -> {
+            throw new TwotwoApplicationException(ErrorCode.STORE_NAME_EXIST);
+        });
+    }
+
+    private StoreCategory getCategoryOrException(UUID categoryId) {
+        return storeCategoryRepository.findById(categoryId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.NOT_FOUND));
+    }
+
+    private Member getMemberOrException(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private Store getStoreOrException(UUID storeId) {
+        return storeRepository.findById(storeId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
+    }
+
 
 }
 

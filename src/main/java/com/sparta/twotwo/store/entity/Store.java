@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Entity
 @Table(name="p_store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

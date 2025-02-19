@@ -4,6 +4,7 @@ import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
+import com.sparta.twotwo.store.dto.request.StoreUpdateRequest;
 import com.sparta.twotwo.store.dto.response.StoreDetailResponse;
 import com.sparta.twotwo.store.dto.response.StoreResponse;
 import com.sparta.twotwo.store.entity.Store;
@@ -71,6 +72,15 @@ public class StoreController {
             @Valid @RequestBody StoreCreateRequest request
     ) throws Exception {
         Store store = storeService.saveStore(request);
+        return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
+    }
+
+    @PatchMapping("/stores/{store_id}")
+    public ResponseEntity<ApiResponse<StoreDetailResponse>> updateStore(
+            @PathVariable("store_id") UUID storeId,
+            @Valid @RequestBody StoreUpdateRequest request
+    ) throws Exception {
+        Store store = storeService.updateStore(storeId,request);
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 
