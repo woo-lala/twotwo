@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +42,7 @@ public class MemberService {
         existUsername(username);
 
         Member member = new Member(username, nickname, email, password, roles, is_public);
+        member.setCreatedBy(member.getMember_id());
 
         memberRepository.save(member);
     }
@@ -58,6 +61,9 @@ public class MemberService {
     public Member updateMember(Long memberId, MemberRequestDto requestDto) {
         Member member = findMember(memberId);
 
+        member.setUpdatedBy(authenticateMember());
+        member.setUpdatedAt(LocalDateTime.now());
+
         Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
         Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
 
@@ -66,9 +72,13 @@ public class MemberService {
 
     public void deleteMember(Long memberId) {
         Member member = findMember(memberId);
+
         member.setMemberStatus(MemberStatusEnum.DELETE);
-        member.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
+        member.setDeletedBy(authenticateMember());
+        member.setDeletedAt(LocalDateTime.now());
+
         System.out.println("token id: " + SecurityUtil.getMemberIdFromSecurityContext());
+
         memberRepository.save(member);
     }
 
@@ -93,6 +103,10 @@ public class MemberService {
 
         return optionalMember.orElseThrow(() ->
                 new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Long authenticateMember() {
+        return SecurityUtil.getMemberIdFromSecurityContext();
     }
 
 }
