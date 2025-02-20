@@ -2,13 +2,13 @@ package com.sparta.twotwo.ai.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.twotwo.ai.config.GeminiConfig;
 import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.ai.repository.AIRequestLogRepository;
 import com.sparta.twotwo.enums.AIRequestStatus;
 import com.sparta.twotwo.product.entity.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @Slf4j
 public class AIService {
-
-    @Value("${gemini.api.key}")
-    private String API_KEY;
-
+    private final GeminiConfig geminiConfig;
     private final AIRequestLogRepository aiRequestLogRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -54,6 +51,11 @@ public class AIService {
     }
 
     private String callAIAPI(String prompt) {
+        String API_KEY = geminiConfig.getKey();
+        if (API_KEY == null || API_KEY.isBlank()) {
+            throw new IllegalStateException("API Key가 설정되지 않았습니다.");
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + API_KEY);
