@@ -1,6 +1,7 @@
 package com.sparta.twotwo.store.dto.response;
 
 import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.product.dto.ProductResponseDto;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
@@ -25,7 +26,7 @@ public class StoreDetailResponse {
     private final Long memberId;
     private final AddressResponse address;
     private final Long minOrderPrice;
-    private final List<UUID> productIds;
+    private final List<ProductMenuResponse> products;
     private final LocalTime operationStartedAt;
     private final LocalTime operationClosedAt;
     private final BigDecimal rating;
@@ -39,7 +40,7 @@ public class StoreDetailResponse {
                 store.getMember().getMember_id(),
                 AddressResponse.from(store.getAddress()),
                 store.getMinOrderPrice(),
-                store.getProducts().stream().map(Product::getId).collect(Collectors.toList()),
+                store.getProducts().stream().map(ProductMenuResponse::from).collect(Collectors.toList()),
                 store.getOperationStartedAt(),
                 store.getOperationClosedAt(),
                 store.getRating(),
