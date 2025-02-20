@@ -34,8 +34,30 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizationRequests) -> {
             authorizationRequests
+                    /*
+                    권한 설정 설명 : 기본적으로는 CUSTOMER 권한을 가지고 있고, 위와 같이 각 권한에 맞게 메소드와 URL 경로를 지정하고 권한 설정
+                                 권한이 다중일때는 hasAnyRole, 단일일때는 hasRole 로 설정
+                     */
+                    //member
                     .requestMatchers("/api/members/signup").permitAll()
                     .requestMatchers("/api/members/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
+                    .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
+                    //store
+
+                    //products
+                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("OWNER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
+
+
+                    //orders
+
+                    //review
+                    .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
                     .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/swagger-resources/**").permitAll()
                     .requestMatchers("/v3/api-docs/**").permitAll()

@@ -2,9 +2,12 @@ package com.sparta.twotwo.product.entity;
 
 import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.common.auditing.BaseEntity;
+import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -15,27 +18,15 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_product")
 public class Product extends BaseEntity {
-
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID id;
 
-    // 나중에 storeId, categoryId 외래 키 설정 수정하기
-    @Column(name = "store_id", nullable = false)
-    private UUID storeId;
-
-    @Column(name = "category_id", nullable = false)
-    private UUID categoryId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id", nullable = false)
-//    private Store store;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", nullable = false)
-//    private Category category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", columnDefinition = "BINARY(16)", nullable = false)
+    private Store store;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "description_id")
@@ -52,7 +43,4 @@ public class Product extends BaseEntity {
 
     @Column(name = "image_url", length = 200)
     private String imageUrl;
-
-    @Column(name = "is_hidden", nullable = false)
-    private boolean isHidden = false;
 }
