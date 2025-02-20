@@ -1,26 +1,40 @@
 package com.sparta.twotwo.store.scheduler;
 
 import com.sparta.twotwo.review.entity.Review;
-import com.sparta.twotwo.review.repository.ReviewRepository;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class StoreScheduler {
 
     private final StoreRepository storeRepository;
-    private final ReviewRepository reviewRepository;
 
-    //    @Scheduled(cron = "0 0 * * * *")
-    @Scheduled(fixedRate = 10000000)
-    public void updateAverageStoreRatingsAndReviewCountTask() {
+    @Transactional
+    @Scheduled(cron = "0 0 * * * *")
+    public void updateAverageStoreRatingsAndReviewCountTaskUsingDatabase() {
+
+        List<Object[]> reviewStats = storeRepository.findAverageRatingsAndReviewCount();
+
+        for (Object[] reviewStat : reviewStats) {
+            UUID storeId = (UUID) reviewStat[0];
+            BigDecimal averageRating = BigDecimal.valueOf((Double) reviewStat[1]);
+            Integer reviewCount = ((Long) reviewStat[2]).intValue();
+            storeRepository.updateRatingAndReviewCount(storeId, averageRating, reviewCount);
+        }
+
+    }
+
+//    @Scheduled(cron = "0 0 * * * *")
+    public void updateAverageStoreRatingsAndReviewCountTaskForMultiThread() {
 
         List<Store> stores = storeRepository.findStoresWithReviews();
 
@@ -36,7 +50,6 @@ public class StoreScheduler {
             storeRepository.saveAndFlush(store);
 
         }
-
     }
 
 }
