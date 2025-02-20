@@ -48,6 +48,11 @@ public class SecurityConfig {
                     //store
 
                     //products
+                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("OWNER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
+
 
                     //orders
 

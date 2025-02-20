@@ -18,7 +18,6 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
 
-    @PreAuthorize("hasRole('OWNER') or hasRole('MANAGER')")
     @PostMapping("/products")
     public ResponseEntity<ApiResponse<ProductResponseDto>> createProduct(@RequestBody @Valid ProductRequestDto requestDto) {
         ProductResponseDto responseDto = productService.createProduct(requestDto);
@@ -37,7 +36,6 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(product));
     }
 
-    @PreAuthorize("hasRole('OWNER') or hasRole('MANAGER')")
     @PutMapping("/products/{productId}")
     public ResponseEntity<ApiResponse<ProductUpdateResponseDto>> updateProduct(
             @PathVariable UUID productId,
@@ -46,7 +44,6 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success("상품이 성공적으로 수정되었습니다.", responseDto));
     }
 
-    @PreAuthorize("hasRole('OWNER') or hasRole('MANAGER')")
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<ApiResponse<ProductDeleteResponseDto>> deleteProduct(@PathVariable UUID productId) {
         ProductDeleteResponseDto responseDto = productService.deleteProduct(productId);
