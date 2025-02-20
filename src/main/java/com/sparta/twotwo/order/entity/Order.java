@@ -20,7 +20,7 @@ public class Order extends BaseEntity {
 
     @Builder
     public Order(OrderType order_type, Long price, Member member, Store store) {
-        this.orderType = order_type;
+        this.order_type = order_type;
         this.price = price;
         this.member = member;
         this.store = store;
@@ -30,11 +30,11 @@ public class Order extends BaseEntity {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
     @Column(name="order_id", columnDefinition = "BINARY(16)")
-    private UUID orderId;
+    private UUID order_id;
 
     @Enumerated
     @Column(name = "order_type", nullable = false)
-    private OrderType orderType;
+    private OrderType order_type;
 
     @Column(name = "price", nullable = false)
     private Long price;
@@ -45,7 +45,7 @@ public class Order extends BaseEntity {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
@@ -53,14 +53,14 @@ public class Order extends BaseEntity {
 
 
     public void changeOrderTYpe(OrderType orderType) {
-        this.orderType = orderType;
+        this.order_type = orderType;
     }
 
 
     public OrderResponseDto toResponseDto() {
         return OrderResponseDto.builder()
-                .orderId(orderId)
-                .orderType(orderType)
+                .orderId(order_id)
+                .orderType(order_type)
                 .price(price)
                 .memberId(member.getMember_id())
                 .storeId(store.getId())
