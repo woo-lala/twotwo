@@ -12,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateReviewRequestDto {
     private UUID orderId;
-    private Long memberId;
     @NotNull(message = "평점을 입력해주세요.")
     @Min(value = 1, message = "평점은 최소 1 이상이어야 합니다.")
     @Max(value = 5, message = "평점은 최대 5까지 입력할 수 있습니다.")
