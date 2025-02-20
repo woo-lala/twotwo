@@ -4,8 +4,10 @@ import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
