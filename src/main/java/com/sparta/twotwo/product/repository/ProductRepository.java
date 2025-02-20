@@ -10,9 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-    List<Product> findByIsHiddenFalse();
-
-    List<Product> findByStoreId(UUID storeId);
-
     List<Product> findByStore(Store store);
 }

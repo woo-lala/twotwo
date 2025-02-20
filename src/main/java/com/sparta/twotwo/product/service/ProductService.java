@@ -2,15 +2,15 @@ package com.sparta.twotwo.product.service;
 
 import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.ai.repository.AIRequestLogRepository;
+import com.sparta.twotwo.ai.service.AIService;
 import com.sparta.twotwo.auth.util.SecurityUtil;
+import com.sparta.twotwo.enums.AIRequestStatus;
 import com.sparta.twotwo.product.dto.*;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final AIRequestLogRepository aiRequestLogRepository;
+    private final AIService aiService;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private Long authenticateMember() {
@@ -50,8 +50,6 @@ public class ProductService {
 
         Product product = new Product();
         product.setStore(store);
-        product.setCategoryId(requestDto.getCategoryId());
-        product.setDescription(requestDto.getDescription());
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
@@ -61,10 +59,19 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(product);
 
+        // AI 설명 자동 생성
+        AIRequestLog aiRequestLog = aiService.generateProductDescription(savedProduct, "이 상품의 설명을 생성해줘");
+
+        if (aiRequestLog != null) {
+            savedProduct.setDescriptionLog(aiRequestLog);
+            savedProduct.setDescription(aiRequestLog.getResponseText());
+        }
+
+        savedProduct = productRepository.save(savedProduct);
+
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
                 .storeId(savedProduct.getStore().getId())
-                .categoryId(savedProduct.getCategoryId())
                 .description(savedProduct.getDescription())
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
@@ -83,7 +90,6 @@ public class ProductService {
         return productRepository.findByStore(store).stream()
                 .map(product -> ProductListResponseDto.builder()
                         .productId(product.getId())
-                        .categoryId(product.getCategoryId())
                         .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
                         .description(product.getDescription())
                         .productName(product.getProductName())
@@ -103,7 +109,6 @@ public class ProductService {
         return ProductResponseDto.builder()
                 .productId(product.getId())
                 .storeId(product.getStore().getId())
-                .categoryId(product.getCategoryId())
                 .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
                 .description(product.getDescription())
                 .productName(product.getProductName())
@@ -129,22 +134,25 @@ public class ProductService {
             throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
         }
 
-        if (requestDto.getDescriptionId() != null) {
-            AIRequestLog descriptionLog = aiRequestLogRepository.findById(requestDto.getDescriptionId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 설명 로그가 존재하지 않습니다: " + requestDto.getDescriptionId()));
-            product.setDescriptionLog(descriptionLog);
-        } else {
-            product.setDescriptionLog(null);
-        }
-
-        product.setCategoryId(requestDto.getCategoryId());
-        product.setDescription(requestDto.getDescription());
+        // 기본 정보 수정
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
         product.setIsHidden(requestDto.isHidden());
         product.setUpdatedBy(updatedBy);
         product.setUpdatedAt(LocalDateTime.now());
+
+        if (requestDto.getDescription() == null || requestDto.getDescription().isBlank()) {
+            AIRequestLog aiRequestLog = aiService.generateProductDescription(product, "이 상품의 설명을 생성해줘");
+            if (aiRequestLog.getStatus() == AIRequestStatus.SUCCESS) {
+                product.setDescriptionLog(aiRequestLog);
+                product.setDescription(aiRequestLog.getResponseText());
+            } else {
+                product.setDescription("상품 설명이 생성되지 않았습니다.");
+            }
+        }
+
+        product = productRepository.save(product);
 
         return ProductUpdateResponseDto.builder()
                 .message("상품이 성공적으로 수정되었습니다.")

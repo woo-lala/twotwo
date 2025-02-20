@@ -3,6 +3,7 @@ package com.sparta.twotwo.store.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,5 +27,10 @@ public class StoreCategory {
 
     @OneToMany(mappedBy = "category")
     private List<Store> stores = new ArrayList<>();
+
+    @Builder
+    public StoreCategory(String name) {
+        this.name = name;
+    }
 
 }
