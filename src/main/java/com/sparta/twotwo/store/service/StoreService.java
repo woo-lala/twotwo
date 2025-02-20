@@ -77,9 +77,6 @@ public class StoreService {
     @Transactional
     public Store updateStore(UUID storeId, StoreUpdateRequest request) {
 
-        //멤버 가져오기
-        Member member = getMemberOrException(request.getMemberId());
-
         //가게 존재하는지 확인
         Store store = getStoreOrException(storeId);
 
@@ -87,21 +84,27 @@ public class StoreService {
 
         Optional.ofNullable(request.getCategoryId()).ifPresent(categoryId -> {
                     StoreCategory category = getCategoryOrException(categoryId);
-                    store.setCategory(category);
+                    store.updateCategory(category);
                 }
         );
 
+        //가게 주인 변경
         Optional.ofNullable(request.getAddress()).ifPresent(requestAddress -> {
                     Address updatedAddress = addressService.updateAddress(requestAddress);
-                    store.setAddress(updatedAddress);
+                    store.updateAddress(updatedAddress);
                 }
         );
 
-        Optional.ofNullable(request.getName()).ifPresent(store::setName);
-        Optional.ofNullable(request.getMinOrderPrice()).ifPresent(store::setMinOrderPrice);
-        Optional.ofNullable(request.getOperationStartedAt()).ifPresent(store::setOperationStartedAt);
-        Optional.ofNullable(request.getOperationClosedAt()).ifPresent(store::setOperationClosedAt);
-        Optional.ofNullable(request.getImageUrl()).ifPresent(store::setImageUrl);
+        Optional.ofNullable(request.getMemberId()).ifPresent(memberId-> {
+            Member owner = getMemberOrException(memberId);
+            store.updateMember(owner);
+        });
+
+        Optional.ofNullable(request.getName()).ifPresent(store::updateName);
+        Optional.ofNullable(request.getMinOrderPrice()).ifPresent(store::updateMinOrderPrice);
+        Optional.ofNullable(request.getOperationStartedAt()).ifPresent(store::updateOperationStartedAt);
+        Optional.ofNullable(request.getOperationClosedAt()).ifPresent(store::updateOperationClosedAt);
+        Optional.ofNullable(request.getImageUrl()).ifPresent(store::updateImageUrl);
 
         //변경하는 사용자 id 가져오기
         Long modifierId = getMemberIdFromSecurityContext();
@@ -123,7 +126,6 @@ public class StoreService {
 
         return storeRepository.saveAndFlush(store);
     }
-
 
     private void validateStoreName(String storeName) {
         storeRepository.findByName(storeName).ifPresent(it -> {
