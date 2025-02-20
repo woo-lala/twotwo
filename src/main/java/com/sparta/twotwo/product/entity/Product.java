@@ -16,7 +16,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_product")
 public class Product extends BaseEntity {
-
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -26,14 +25,6 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
-
-    // 나중에 categoryId 외래 키 설정 수정하기
-    @Column(name = "category_id", nullable = false)
-    private UUID categoryId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", nullable = false)
-//    private Category category;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "description_id")

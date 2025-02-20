@@ -14,9 +14,6 @@ public class ProductRequestDto {
     @NotNull
     private UUID storeId;
 
-    @NotNull
-    private UUID categoryId;
-
     private UUID descriptionId;
 
     private String description;

@@ -50,7 +50,6 @@ public class ProductService {
 
         Product product = new Product();
         product.setStore(store);
-        product.setCategoryId(requestDto.getCategoryId());
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
@@ -73,7 +72,6 @@ public class ProductService {
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
                 .storeId(savedProduct.getStore().getId())
-                .categoryId(savedProduct.getCategoryId())
                 .description(savedProduct.getDescription())
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
@@ -92,7 +90,6 @@ public class ProductService {
         return productRepository.findByStore(store).stream()
                 .map(product -> ProductListResponseDto.builder()
                         .productId(product.getId())
-                        .categoryId(product.getCategoryId())
                         .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
                         .description(product.getDescription())
                         .productName(product.getProductName())
@@ -112,7 +109,6 @@ public class ProductService {
         return ProductResponseDto.builder()
                 .productId(product.getId())
                 .storeId(product.getStore().getId())
-                .categoryId(product.getCategoryId())
                 .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
                 .description(product.getDescription())
                 .productName(product.getProductName())
@@ -139,7 +135,6 @@ public class ProductService {
         }
 
         // 기본 정보 수정
-        product.setCategoryId(requestDto.getCategoryId());
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
