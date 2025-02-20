@@ -5,6 +5,7 @@ import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.MemberResponseDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/members")
@@ -59,9 +58,24 @@ public class MemberController {
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
     }
 
-    @DeleteMapping("{member_id}")
+    @PatchMapping("/{member_id}/grant/owner")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMemberAuth(@PathVariable("member_id") Long member_id) {
+        Member member = memberService.addMemberAuth(member_id, RolesEnum.OWNER);
+        MemberResponseDto response = new MemberResponseDto(member);
+
+        return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/{member_id}")
     public void deleteMember(@PathVariable("member_id") Long member_id) {
 
         memberService.deleteMember(member_id);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> searchMember() {
+
+        return null;
     }
 }

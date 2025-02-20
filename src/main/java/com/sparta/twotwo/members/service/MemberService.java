@@ -8,6 +8,7 @@ import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.entity.MemberStatusEnum;
+import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,9 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class MemberService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         boolean is_public = requestDto.is_public();
-        List<String> roles = authorityUtil.createRoles(email);
+        Set<String> roles = authorityUtil.createRoles(email);
 
         existEmail(email);
         existUsername(username);
@@ -61,13 +61,18 @@ public class MemberService {
     public Member updateMember(Long memberId, MemberRequestDto requestDto) {
         Member member = findMember(memberId);
 
-        member.setUpdatedBy(authenticateMember());
-        member.setUpdatedAt(LocalDateTime.now());
-
         Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
         Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
 
-        return memberRepository.save(member);
+        return member;
+    }
+
+    @Transactional
+    public Member addMemberAuth(Long memberId, RolesEnum role) {
+        Member member = findMember(memberId);
+        member.addRole(role);
+
+        return member;
     }
 
     public void deleteMember(Long memberId) {
@@ -108,5 +113,4 @@ public class MemberService {
     public Long authenticateMember() {
         return SecurityUtil.getMemberIdFromSecurityContext();
     }
-
 }
