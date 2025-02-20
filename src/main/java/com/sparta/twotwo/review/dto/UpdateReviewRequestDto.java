@@ -14,4 +14,5 @@ public class UpdateReviewRequestDto {
     private String title;
     @Size(min = 1, max = 300, message = "내용은 300자까지 입력할 수 있습니다.")
     private String content;
+    public boolean isHidden;
 }
