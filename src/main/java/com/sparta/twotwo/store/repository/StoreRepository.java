@@ -1,6 +1,5 @@
 package com.sparta.twotwo.store.repository;
 
-import com.sparta.twotwo.store.dto.StoreReviewStats;
 import com.sparta.twotwo.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
