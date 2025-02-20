@@ -36,6 +36,9 @@ public class SecurityConfig {
             authorizationRequests
                     .requestMatchers("/api/members/signup").permitAll()
                     .requestMatchers("/api/members/login").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/swagger-resources/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
                     .anyRequest().authenticated();
         })
