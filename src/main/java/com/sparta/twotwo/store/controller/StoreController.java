@@ -28,6 +28,7 @@ public class StoreController {
 
     /**
      * 가게 전체 조회
+     * 사용자 권한 (Master, Manager, Owner, Customer)
      */
     @GetMapping("/stores")
     public ResponseEntity<ApiResponse<Page<StoreResponse>>> getAllStores(
@@ -40,6 +41,7 @@ public class StoreController {
 
     /**
      * 가게 상세 조회
+     * 사용자 권한 (Master, Manager, Owner, Customer)
      */
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<ApiResponse<StoreDetailResponse>> getStoreDetails(
@@ -52,6 +54,7 @@ public class StoreController {
 
     /**
      * 카테고리별 가게 조회
+     * 사용자 권한 (Master, Manager, Owner, Customer)
      */
     @GetMapping("/categories/{categoryId}/stores")
     public ResponseEntity<ApiResponse<Page<StoreResponse>>> getStoresByCategory(
@@ -65,7 +68,7 @@ public class StoreController {
 
     /**
      * 가게 등록
-     * 사용권한 (
+     * 사용자 권한 (Master, Manager)
      */
     @PostMapping("/stores")
     public ResponseEntity<ApiResponse<StoreDetailResponse>> createStore(
@@ -75,6 +78,10 @@ public class StoreController {
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 
+    /**
+     * 가게 수정
+     * 사용자 권한 (Master, Manager)
+     */
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<ApiResponse<StoreDetailResponse>> updateStore(
             @PathVariable UUID storeId,
@@ -84,5 +91,16 @@ public class StoreController {
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 
+    /**
+     * 가게 삭제
+     * 사용자 권한 (Master, Manager)
+     */
+    @DeleteMapping("/stores/{storeId}")
+    public ResponseEntity<Void> deleteStore(
+            @PathVariable UUID storeId
+    ) throws Exception {
+        storeService.deleteStore(storeId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

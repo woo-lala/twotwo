@@ -17,8 +17,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.sparta.twotwo.auth.util.SecurityUtil.getMemberIdFromSecurityContext;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +67,9 @@ public class StoreService {
                 .member(member)
                 .build();
 
+        Long creatorId = getMemberIdFromSecurityContext();
+        newStore.setCreatedBy(creatorId);
+
         return storeRepository.save(newStore);
 
     }
@@ -97,8 +103,27 @@ public class StoreService {
         Optional.ofNullable(request.getOperationClosedAt()).ifPresent(store::setOperationClosedAt);
         Optional.ofNullable(request.getImageUrl()).ifPresent(store::setImageUrl);
 
+        //변경하는 사용자 id 가져오기
+        Long modifierId = getMemberIdFromSecurityContext();
+        store.setUpdatedBy(modifierId);
+
         return storeRepository.save(store);
     }
+
+    @Transactional
+    public Store deleteStore(UUID storeId) {
+        //가게 존재하는지 확인
+        Store store = getStoreOrException(storeId);
+
+        Long deleterId = getMemberIdFromSecurityContext();
+
+        store.setIsDeleted(Boolean.TRUE);
+        store.setDeletedAt(LocalDateTime.now());
+        store.setDeletedBy(deleterId);
+
+        return storeRepository.saveAndFlush(store);
+    }
+
 
     private void validateStoreName(String storeName) {
         storeRepository.findByName(storeName).ifPresent(it -> {
