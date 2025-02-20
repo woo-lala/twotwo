@@ -15,7 +15,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductListResponseDto {
     private UUID productId;
-    private UUID categoryId;
     private UUID descriptionId;
     private String description;
     private String productName;

@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ProductUpdateRequestDto {
-    private UUID categoryId;
     private UUID descriptionId;
     private String description;
     private String productName;
