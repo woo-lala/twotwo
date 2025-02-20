@@ -13,7 +13,6 @@ public class ProductMenuResponse {
 
     private final UUID id;
     private final String productName;
-    private final UUID categoryId;
     private final String description;
     private final int price;
     private final String imageUrl;
@@ -23,7 +22,6 @@ public class ProductMenuResponse {
         return new ProductMenuResponse(
                 product.getId(),
                 product.getProductName(),
-                product.getCategoryId(),
                 product.getDescription(),
                 product.getPrice(),
                 product.getImageUrl(),
