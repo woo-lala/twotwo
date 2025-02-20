@@ -4,6 +4,8 @@ import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
+import com.sparta.twotwo.store.dto.request.AddressRequest;
+import com.sparta.twotwo.store.dto.request.AddressUpdateRequest;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
 import com.sparta.twotwo.store.dto.request.StoreUpdateRequest;
 import com.sparta.twotwo.store.entity.Address;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,21 +52,30 @@ public class StoreService {
     }
 
     @Transactional
-    public Store saveStore(final StoreCreateRequest request) {
+    public Store saveStore(
+            String reqName,
+            Long reqMemberId,
+            AddressRequest reqAddress,
+            UUID reqCategoryId,
+            String reqImageUrl,
+            Long reqMinOrderPrice,
+            LocalTime reqOperationStartedAt,
+            LocalTime reqOperationClosedAt
+    ) {
 
-        Member member = getMemberOrException(request.getMemberId());
-        final Address address = addressService.saveAddress(request.getAddress());
-        StoreCategory category = getCategoryOrException(request.getCategoryId());
-        validateStoreName(request.getName());
+        Member member = getMemberOrException(reqMemberId);
+        final Address address = addressService.saveAddress(reqAddress);
+        StoreCategory category = getCategoryOrException(reqCategoryId);
+        validateStoreName(reqName);
 
         Store newStore = Store.builder()
-                .name(request.getName())
+                .name(reqName)
                 .address(address)
-                .minOrderPrice(request.getMinOrderPrice())
-                .operationClosedAt(request.getOperationClosedAt())
-                .operationStartedAt(request.getOperationStartedAt())
+                .minOrderPrice(reqMinOrderPrice)
+                .operationClosedAt(reqOperationClosedAt)
+                .operationStartedAt(reqOperationStartedAt)
                 .category(category)
-                .imageUrl(request.getImageUrl())
+                .imageUrl(reqImageUrl)
                 .member(member)
                 .build();
 
@@ -75,36 +87,47 @@ public class StoreService {
     }
 
     @Transactional
-    public Store updateStore(UUID storeId, StoreUpdateRequest request) {
+    public Store updateStore(
+            UUID storeId,
+            String reqName,
+            Long reqMemberId,
+            AddressUpdateRequest reqAddress,
+            UUID reqCategoryId,
+            String reqImageUrl,
+            Long reqMinOrderPrice,
+            LocalTime reqOperationStartedAt,
+            LocalTime reqOperationClosedAt
+    ) {
 
         //가게 존재하는지 확인
         Store store = getStoreOrException(storeId);
 
-        validateStoreName(request.getName());
+        validateStoreName(reqName);
 
-        Optional.ofNullable(request.getCategoryId()).ifPresent(categoryId -> {
+        Optional.ofNullable(reqCategoryId).ifPresent(categoryId -> {
                     StoreCategory category = getCategoryOrException(categoryId);
                     store.updateCategory(category);
                 }
         );
 
         //가게 주인 변경
-        Optional.ofNullable(request.getAddress()).ifPresent(requestAddress -> {
+        Optional.ofNullable(reqAddress).ifPresent(requestAddress -> {
                     Address updatedAddress = addressService.updateAddress(requestAddress);
                     store.updateAddress(updatedAddress);
                 }
         );
 
-        Optional.ofNullable(request.getMemberId()).ifPresent(memberId-> {
+        Optional.ofNullable(reqMemberId).ifPresent(memberId -> {
             Member owner = getMemberOrException(memberId);
             store.updateMember(owner);
         });
 
-        Optional.ofNullable(request.getName()).ifPresent(store::updateName);
-        Optional.ofNullable(request.getMinOrderPrice()).ifPresent(store::updateMinOrderPrice);
-        Optional.ofNullable(request.getOperationStartedAt()).ifPresent(store::updateOperationStartedAt);
-        Optional.ofNullable(request.getOperationClosedAt()).ifPresent(store::updateOperationClosedAt);
-        Optional.ofNullable(request.getImageUrl()).ifPresent(store::updateImageUrl);
+        Optional.ofNullable(reqName).ifPresent(store::updateName);
+        Optional.ofNullable(reqImageUrl).ifPresent(store::updateImageUrl);
+        Optional.ofNullable(reqMinOrderPrice).ifPresent(store::updateMinOrderPrice);
+        Optional.ofNullable(reqOperationStartedAt).ifPresent(store::updateOperationStartedAt);
+        Optional.ofNullable(reqOperationClosedAt).ifPresent(store::updateOperationClosedAt);
+
 
         //변경하는 사용자 id 가져오기
         Long modifierId = getMemberIdFromSecurityContext();

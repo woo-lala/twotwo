@@ -74,7 +74,16 @@ public class StoreController {
     public ResponseEntity<ApiResponse<StoreDetailResponse>> createStore(
             @Valid @RequestBody StoreCreateRequest request
     ) throws Exception {
-        Store store = storeService.saveStore(request);
+        Store store = storeService.saveStore(
+                request.getName(),
+                request.getMemberId(),
+                request.getAddress(),
+                request.getCategoryId(),
+                request.getImageUrl(),
+                request.getMinOrderPrice(),
+                request.getOperationStartedAt(),
+                request.getOperationClosedAt()
+        );
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 
@@ -87,7 +96,17 @@ public class StoreController {
             @PathVariable UUID storeId,
             @Valid @RequestBody StoreUpdateRequest request
     ) throws Exception {
-        Store store = storeService.updateStore(storeId,request);
+        Store store = storeService.updateStore(
+                storeId,
+                request.getName(),
+                request.getMemberId(),
+                request.getAddress(),
+                request.getCategoryId(),
+                request.getImageUrl(),
+                request.getMinOrderPrice(),
+                request.getOperationStartedAt(),
+                request.getOperationClosedAt()
+        );
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponse.from(store)));
     }
 

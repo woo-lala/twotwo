@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -169,7 +170,12 @@ public class StoreServiceTest {
         StoreCreateRequest request = StoreCreateRequest.builder()
                 .name(duplicatedName)
                 .memberId(member.getMember_id())
-                .address(addressRequest)
+                .address(new AddressRequest("sido", "sigg", "emd", "admCode", "zipNum","roadAddress","detailAddress"))
+                .categoryId(UUID.randomUUID())
+                .imageUrl("imageUrl")
+                .minOrderPrice(0L)
+                .operationStartedAt(LocalTime.now())
+                .operationClosedAt(LocalTime.now())
                 .build();
 
         StoreCategory category = StoreCategory.builder().name("카테고리 A").build();
@@ -182,7 +188,15 @@ public class StoreServiceTest {
 
         //then
         assertThrows(TwotwoApplicationException.class, () -> {
-            storeService.saveStore(request);
+            storeService.saveStore(
+                    request.getName(),
+                    request.getMemberId(),
+                    request.getAddress(),
+                    request.getCategoryId(),
+                    request.getImageUrl(),
+                    request.getMinOrderPrice(),
+                    request.getOperationStartedAt(),
+                    request.getOperationClosedAt());
         });
     }
 
