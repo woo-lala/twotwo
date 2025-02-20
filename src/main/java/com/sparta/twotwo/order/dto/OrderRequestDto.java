@@ -3,6 +3,8 @@ package com.sparta.twotwo.order.dto;
 import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.order.entity.Order;
+import com.sparta.twotwo.order.entity.OrderProduct;
+import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.store.entity.Store;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +18,23 @@ public class OrderRequestDto {
     private OrderType orderType;
     private Long price;
 
+    private Long quantity;
+    private UUID productId;
 
-    //TODO StoreId 받기
-    public Order toEntity(Member member, Store store) {
+    public Order toOrderEntity(Member member, Store store) {
         return Order.builder()
                 .price(price)
                 .order_type(orderType)
                 .member(member)
                 .store(store)
+                .build();
+    }
+
+    public OrderProduct toOrderProductEntity(Order order, Product product){
+        return OrderProduct.builder()
+                .order(order)
+                .product(product)
+                .quantity(quantity)
                 .build();
     }
 

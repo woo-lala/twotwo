@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,7 +20,7 @@ public class Order extends BaseEntity {
 
     @Builder
     public Order(OrderType order_type, Long price, Member member, Store store) {
-        this.order_type = order_type;
+        this.orderType = order_type;
         this.price = price;
         this.member = member;
         this.store = store;
@@ -28,12 +29,12 @@ public class Order extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID order_id;
+    @Column(name="order_id", columnDefinition = "BINARY(16)")
+    private UUID orderId;
 
     @Enumerated
     @Column(name = "order_type", nullable = false)
-    private OrderType order_type;
+    private OrderType orderType;
 
     @Column(name = "price", nullable = false)
     private Long price;
@@ -47,23 +48,23 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "id")
     private Store store;
 
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderProduct> orderProducts;
 
-    public void changePrice(Long price) {
-        this.price = price;
-    }
 
-    public void changeOrderType(OrderType order_type) {
-        this.order_type = order_type;
+    public void changeOrderTYpe(OrderType orderType) {
+        this.orderType = orderType;
     }
 
 
     public OrderResponseDto toResponseDto() {
         return OrderResponseDto.builder()
-                .order_id(order_id)
-                .order_type(order_type)
+                .orderId(orderId)
+                .orderType(orderType)
                 .price(price)
                 .memberId(member.getMember_id())
                 .storeId(store.getId())
+                .orderProduct(orderProducts)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();

@@ -2,6 +2,7 @@ package com.sparta.twotwo.order.entity;
 
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
+import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,10 +17,10 @@ import java.util.UUID;
 public class OrderProduct extends BaseEntity {
 
     @Builder
-    public OrderProduct(Order order, Product product, Long product_Quantity){
+    public OrderProduct(Order order, Product product, Long quantity){
         this.order = order;
         this.product = product;
-        this.product_Quantity = product_Quantity;
+        this.quantity = quantity;
     }
 
     @Id
@@ -36,8 +37,13 @@ public class OrderProduct extends BaseEntity {
     @JoinColumn(name = "id")
     private Product product;
 
-    private Long product_Quantity;
+    @Column(name = "quantity", nullable = false)
+    private Long quantity;
 
+
+    public void changeQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
 
 
 
