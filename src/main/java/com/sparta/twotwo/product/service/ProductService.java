@@ -82,7 +82,7 @@ public class ProductService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + storeId));
 
-        return productRepository.findByStore(store).stream()
+        return productRepository.findByStoreAndIsDeletedFalse(store).stream()
                 .map(product -> ProductListResponseDto.builder()
                         .productId(product.getId())
                         .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
@@ -98,7 +98,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdAndIsDeletedFalse(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
 
         return ProductResponseDto.builder()
