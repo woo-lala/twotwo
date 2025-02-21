@@ -6,6 +6,7 @@ import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -59,10 +60,10 @@ public class Store extends BaseEntity {
     private LocalTime operationClosedAt;
 
     @Column(name = "rating", precision = 2, scale = 1)
-    private BigDecimal rating = BigDecimal.valueOf(0.0);
+    private BigDecimal rating;
 
     @Column(name = "review_cnt")
-    private Integer reviewCount = 0;
+    private Integer reviewCount;
 
     @Builder
     public Store(Member member, Address address, String name, Long minOrderPrice, LocalTime operationClosedAt, LocalTime operationStartedAt, StoreCategory category, BigDecimal rating, Integer reviewCount, String imageUrl) {
@@ -93,7 +94,6 @@ public class Store extends BaseEntity {
     public void updateCategory(StoreCategory category) {
         this.category = category;
     }
-
 
     public void updateMinOrderPrice(Long minOrderPrice) {
         this.minOrderPrice = minOrderPrice;

@@ -34,7 +34,8 @@ public class StoreScheduler {
 
     }
 
-    @Scheduled(fixedRate = 1000000)
+//    @Scheduled(fixedRate = 1000000)
+    @Scheduled(cron = "0 0 * * * *")
     public void updateStoreReviewStats() {
 
         List<Store> stores = storeRepository.findStoresWithReviews();
