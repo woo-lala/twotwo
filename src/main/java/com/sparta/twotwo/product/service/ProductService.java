@@ -51,7 +51,7 @@ public class ProductService {
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.isHidden());
+        product.setIsHidden(requestDto.getIsHidden() != null ? requestDto.getIsHidden() : false);
         product.setCreatedBy(createdBy);
         product.setCreatedAt(LocalDateTime.now());
 
