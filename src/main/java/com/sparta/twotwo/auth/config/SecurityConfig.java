@@ -56,10 +56,10 @@ public class SecurityConfig {
 //                    .requestMatchers("/api/products").permitAll()
 
                     //orders
-                    .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.GET, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
 
                     //categories
                     .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("MASTER", "MANAGER")
