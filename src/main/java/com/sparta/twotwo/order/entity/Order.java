@@ -8,11 +8,17 @@ import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
+@SQLDelete(sql = "UPDATE p_order SET is_deleted=true WHERE order_id= ?")
+@SQLRestriction("is_deleted = false")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,15 +55,24 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<OrderProduct> orderProducts;
+
+    public void addOrderProductList(OrderProduct orderProduct) {
+        this.orderProducts.add(orderProduct);
+        orderProduct.setOrder(this);
+    }
 
 
     public void changeOrderTYpe(OrderType orderType) {
         this.order_type = orderType;
     }
-    public void calculateTotalPrice(int price, Long quantity) {
-        this.price = price * quantity;
+    public void setTotalPrice(Long totalPrice) {
+        this.price = totalPrice;
+
+    }
+
+    public void changeDeletedAt(){
 
     }
 

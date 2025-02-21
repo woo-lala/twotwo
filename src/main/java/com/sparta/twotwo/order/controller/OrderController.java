@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,21 +66,17 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
             @PathVariable("store_id") String store_id,
 //            @AuthenticationPrincipal MemberDetails memberDetails,
-            @RequestBody OrderRequestDto orderRequestDto){
-
-
+            @RequestBody OrderRequestDto orderRequestDto
+//            @RequestBody List<OrderProductRequestDto> orderProductRequestDtoList
+    ){
 
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        MemberDetails memberDetails = (MemberDetails)authentication.getPrincipal();
 
         Long memberId = SecurityUtil.getMemberIdFromSecurityContext();
-        log.info("memberId {}", memberId);
         Member member = memberRepository.findById(memberId).orElseThrow();
-        log.info("member {}", member);
 
         log.info("requestDto: {}", orderRequestDto);
-//        log.info("memberDetails: {}", memberDetails);
-
 
         UUID store = UUID.fromString(store_id);
         OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, member, store);
@@ -117,8 +114,9 @@ public class OrderController {
     //TODO
     // Order 삭제
     @DeleteMapping("/orders/{order_id}")
-    public ResponseEntity<ApiResponse<OrderResponseDto>> deleteOrder(@PathVariable UUID order_id){
-        return null;
+    public ResponseEntity<ApiResponse<OrderResponseDto>> deleteOrder(@PathVariable("order_id") UUID order_id){
+        orderService.deleteOrder(order_id);
+        return new ResponseEntity<>(ApiResponse.success(null), HttpStatus.OK);
     }
 
 

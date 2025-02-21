@@ -8,9 +8,13 @@ import com.sparta.twotwo.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
+@SQLDelete(sql = "UPDATE p_order_product SET is_deleted=true WHERE order_product_id= ?")
+@SQLRestriction("is_deleted = false")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -41,6 +45,9 @@ public class OrderProduct extends BaseEntity {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
     public void changeQuantity(Long quantity) {
         this.quantity = quantity;
@@ -63,6 +70,8 @@ public class OrderProduct extends BaseEntity {
     public String toString() {
         return "OrderProduct{" +
                 "orderProductId=" + orderProductId +
+                ", order=" + order.getOrder_id() +
+                ", product=" + product.getId() +
                 ", quantity=" + quantity +
                 '}';
     }

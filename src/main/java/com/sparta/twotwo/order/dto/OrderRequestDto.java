@@ -9,6 +9,8 @@ import com.sparta.twotwo.store.entity.Store;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,17 +18,18 @@ import java.util.UUID;
 public class OrderRequestDto {
 
     private OrderType orderType;
-    private Long price;
+//    private Long price;
 
-    private Long quantity;
-    private UUID productId;
+    private List<OrderProductRequestDto> orderProductRequestDtos;
+//    private Long quantity;
+//    private UUID productId;
 
     public Order toOrderEntity(Member member, Store store) {
         return Order.builder()
-                .price(price)
                 .order_type(orderType)
                 .member(member)
                 .store(store)
+                .orderProducts(new ArrayList<>())
                 .build();
     }
 
@@ -34,7 +37,6 @@ public class OrderRequestDto {
         return OrderProduct.builder()
                 .order(order)
                 .product(product)
-                .quantity(quantity)
                 .build();
     }
 
@@ -42,9 +44,7 @@ public class OrderRequestDto {
     public String toString() {
         return "OrderRequestDto{" +
                 "orderType=" + orderType +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", productId=" + productId +
+                ", orderProductRequestDtos=" + orderProductRequestDtos +
                 '}';
     }
 }

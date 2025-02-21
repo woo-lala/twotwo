@@ -1,5 +1,6 @@
 package com.sparta.twotwo.order.service;
 
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.common.response.ApiResponse;
@@ -28,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,27 +47,45 @@ public class OrderService {
 
 
     public OrderResponseDto saveOrder(OrderRequestDto orderRequestDto, Member member, UUID storeId) {
+        log.info("orderRequestDto: {}", orderRequestDto);
+        log.info("member: {}", member);
+        log.info("storeId: {}", storeId);
+
 
         Store findStore = storeRepository.findById(storeId)
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
         Order order = orderRequestDto.toOrderEntity(member, findStore);
+
         //TODO Store not found 에러 추가
-        Product product = productRepository.findById(orderRequestDto.getProductId())
-                .orElseThrow(()-> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
-        OrderProduct orderProduct = OrderProduct.builder()
-                .order(order)
-                .product(product)
-                .quantity(orderRequestDto.getQuantity())
-                .build();
+        List<OrderProductRequestDto> orderProductRequestDtos = orderRequestDto.getOrderProductRequestDtos();
 
+        Long totalPrice = 0L;
+        for(OrderProductRequestDto dto : orderProductRequestDtos) {
+            log.info("dto: {}", dto);
 
+            Product product = productRepository.findById(dto.getProductId())
+                    .orElseThrow(()-> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+            log.info("product: {}", product);
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(dto.getQuantity())
+                    .build();
 
-        order.calculateTotalPrice(product.getPrice(), orderRequestDto.getQuantity());
+            log.info("@@@@@@@@@@@@orderProduct: {}", orderProduct);
+            totalPrice += product.getPrice() * dto.getQuantity();
+            //영속성 전이
+            order.addOrderProductList(orderProduct);
+        }
+        
+        order.setTotalPrice(totalPrice);
+
+        log.info("order: {}", order);
 
         Order savedOrder = orderRepository.save(order);
-        orderProductRepository.save(orderProduct);
 
         return savedOrder.toResponseDto();
+
     }
 
 
@@ -107,21 +127,42 @@ public class OrderService {
         OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, productId);
         log.info("orderProduct {}", orderProduct.toString());
 
-        Product product = productRepository.findById(orderRequestDto.getProductId())
-                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
-        orderProduct.changeProduct(product);
-        orderProduct.changeQuantity(orderRequestDto.getQuantity());
+//        Product product = productRepository.findById(orderRequestDto.getProductId())
+//                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
+//        orderProduct.changeProduct(product);
+//        orderProduct.changeQuantity(orderRequestDto.getQuantity());
+//
+//
+//        Order order = orderRepository.findById(orderId)
+//                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+//
+//        order.calculateTotalPrice(orderProduct.getProduct().getPrice(), orderRequestDto.getQuantity());
+//
+//        orderRepository.save(order);
+//        orderProductRepository.save(orderProduct);
+//
+//        return order;
+        return null;
+    }
 
+    public void deleteOrder(UUID orderId) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
-
-        order.calculateTotalPrice(orderProduct.getProduct().getPrice(), orderRequestDto.getQuantity());
-
+                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+        order.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
+        order.setDeletedAt(LocalDateTime.now());
         orderRepository.save(order);
-        orderProductRepository.save(orderProduct);
+        order.getOrderProducts().stream()
+                        .map(orderProduct ->{
+                            orderProduct.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
+                            orderProduct.setDeletedAt(LocalDateTime.now());
+                            return orderProduct;
+                        })
+                .forEach(orderProduct -> orderProductRepository.save(orderProduct));
 
-        return order;
+
+        orderRepository.deleteById(orderId);
+
     }
 
 }

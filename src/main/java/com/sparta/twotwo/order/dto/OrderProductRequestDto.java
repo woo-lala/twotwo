@@ -23,4 +23,11 @@ public class OrderProductRequestDto {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "OrderProductRequestDto{" +
+                "quantity=" + quantity +
+                ", productId=" + productId +
+                '}';
+    }
 }
