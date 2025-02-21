@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +31,14 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<ApiResponse<Page<MemberResponseDto>>> gerMembers(@RequestParam(defaultValue = "10") int size,
-                                                                           @RequestParam(defaultValue = "1") int page) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Member> members = memberService.getMembers(pageable);
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<MemberResponseDto>>> getMembers(@RequestParam(required = false) String role,
+                                                                           @RequestParam(defaultValue = "10") int size,
+                                                                           @RequestParam(defaultValue = "1") int page,
+                                                                           @RequestParam(defaultValue = "false") boolean isAsc) {
+
+
+        Page<Member> members = memberService.getMembers(role, size, page, isAsc);
 
         Page<MemberResponseDto> responseDto =  members.map(MemberResponseDto::new);
 
@@ -71,11 +75,5 @@ public class MemberController {
     public void deleteMember(@PathVariable("member_id") Long member_id) {
 
         memberService.deleteMember(member_id);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> searchMember() {
-
-        return null;
     }
 }
