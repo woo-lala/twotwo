@@ -90,7 +90,6 @@ public class ProductService {
                         .productName(product.getProductName())
                         .price(product.getPrice())
                         .imageUrl(product.getImageUrl())
-                        .isHidden(product.getIsHidden())
                         .createdAt(product.getCreatedAt().format(FORMATTER))
                         .build())
                 .collect(Collectors.toList());
@@ -109,7 +108,6 @@ public class ProductService {
                 .productName(product.getProductName())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
-                .isHidden(product.getIsHidden())
                 .createdAt(product.getCreatedAt().format(FORMATTER))
                 .createdBy(product.getCreatedBy())
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().format(FORMATTER) : null)
