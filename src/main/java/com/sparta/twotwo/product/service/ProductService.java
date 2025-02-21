@@ -154,7 +154,6 @@ public class ProductService {
         product.setUpdatedAt(LocalDateTime.now());
 
         return ProductUpdateResponseDto.builder()
-                .message("상품이 성공적으로 수정되었습니다.")
                 .productId(product.getId())
                 .updatedAt(product.getUpdatedAt().format(FORMATTER))
                 .updatedBy(updatedBy)
@@ -173,7 +172,6 @@ public class ProductService {
         product.setIsDeleted(true);
 
         return ProductDeleteResponseDto.builder()
-                .message("상품이 성공적으로 삭제되었습니다.")
                 .productId(product.getId())
                 .deletedAt(product.getDeletedAt().format(FORMATTER))
                 .deletedBy(deletedBy)
