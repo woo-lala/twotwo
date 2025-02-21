@@ -136,8 +136,6 @@ public class ProductService {
                 throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
             }
             product.setPrice(requestDto.getPrice());
-        } else {
-            throw new IllegalArgumentException("상품 가격은 반드시 입력해야 합니다.");
         }
 
         if (requestDto.getImageUrl() != null) {
