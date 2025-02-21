@@ -41,8 +41,10 @@ public class OrderRequestDto {
     @Override
     public String toString() {
         return "OrderRequestDto{" +
-                ", orderType=" + orderType +
+                "orderType=" + orderType +
                 ", price=" + price +
+                ", quantity=" + quantity +
+                ", productId=" + productId +
                 '}';
     }
 }

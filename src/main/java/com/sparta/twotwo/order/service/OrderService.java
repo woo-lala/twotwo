@@ -58,6 +58,10 @@ public class OrderService {
                 .quantity(orderRequestDto.getQuantity())
                 .build();
 
+
+
+        order.calculateTotalPrice(product.getPrice(), orderRequestDto.getQuantity());
+
         Order savedOrder = orderRepository.save(order);
         orderProductRepository.save(orderProduct);
 
@@ -98,16 +102,26 @@ public class OrderService {
     }
 
 
-    public OrderResponseDto updateOrder(UUID orderId, OrderRequestDto orderRequestDto) {
+    public Order updateOrder(UUID orderId, UUID productId, OrderRequestDto orderRequestDto) {
+
+        OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, productId);
+        log.info("orderProduct {}", orderProduct.toString());
+
+        Product product = productRepository.findById(orderRequestDto.getProductId())
+                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
+        orderProduct.changeProduct(product);
+        orderProduct.changeQuantity(orderRequestDto.getQuantity());
+
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
 
-        order.changeOrderTYpe(orderRequestDto.getOrderType());
+        order.calculateTotalPrice(orderProduct.getProduct().getPrice(), orderRequestDto.getQuantity());
 
-        OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, orderRequestDto.getProductId());
-        orderProduct.changeQuantity(orderRequestDto.getQuantity());
+        orderRepository.save(order);
+        orderProductRepository.save(orderProduct);
 
-        return order.toResponseDto();
+        return order;
     }
 
 }

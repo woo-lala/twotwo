@@ -56,6 +56,10 @@ public class Order extends BaseEntity {
     public void changeOrderTYpe(OrderType orderType) {
         this.order_type = orderType;
     }
+    public void calculateTotalPrice(int price, Long quantity) {
+        this.price = price * quantity;
+
+    }
 
 
     public OrderResponseDto toResponseDto() {
@@ -84,4 +88,6 @@ public class Order extends BaseEntity {
                 ", orderProducts=" + orderProducts +
                 '}';
     }
+
+
 }

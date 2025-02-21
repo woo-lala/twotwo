@@ -102,12 +102,16 @@ public class OrderController {
 
     //TODO
     // Order 수정
-    @PatchMapping("/orders/{order_id}")
+    @PatchMapping("/orders/{order_id}/{product_id}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> updateOrder(
             @PathVariable("order_id") UUID order_id,
-            @RequestBody OrderRequestDto orderRequestDto,
-            @RequestBody OrderProductRequestDto orderProductRequestDto){
-        return null;
+            @PathVariable("product_id") UUID product_id,
+            @RequestBody OrderRequestDto orderRequestDto){
+        log.info("orderId {}", order_id);
+        log.info("productId {}", product_id);
+        log.info("orderRequestDto {}", orderRequestDto);
+        Order order = orderService.updateOrder(order_id, product_id, orderRequestDto);
+        return new ResponseEntity<>(ApiResponse.success(order.toResponseDto()), HttpStatus.OK);
     }
 
     //TODO

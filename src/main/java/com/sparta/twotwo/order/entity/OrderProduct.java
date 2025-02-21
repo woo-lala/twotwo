@@ -45,6 +45,10 @@ public class OrderProduct extends BaseEntity {
     public void changeQuantity(Long quantity) {
         this.quantity = quantity;
     }
+    public void changeProduct(Product product) {
+        this.product = product;
+    }
+
 
     public OrderProductDto toDto(){
         return OrderProductDto.builder()
