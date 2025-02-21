@@ -14,9 +14,7 @@ public class ProductRequestDto {
     @NotNull
     private UUID storeId;
 
-    private UUID descriptionId;
-
-    private String description;
+    private String description; //설명 수동 입력 가능 (?)
 
     @NotBlank
     private String productName;
@@ -26,5 +24,5 @@ public class ProductRequestDto {
 
     private String imageUrl;
 
-    private boolean isHidden;
+    private Boolean isHidden;
 }
