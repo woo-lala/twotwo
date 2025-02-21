@@ -17,7 +17,7 @@ public class SignupRequestDto {
     @NotBlank
     @Email
     private String email;
-    private boolean is_public;
+    private boolean is_public = true;
     @NotBlank
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+-=])[a-zA-Z0-9!@#$%^&*()_+-=]{8,15}$", message = "비밀번호는 영문과 숫자, 특수문자 포함 8자리이상 15자리이하로 입력해 주세요.")
     private String password;
