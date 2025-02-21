@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Getter
-public class StoreCreateRequest {
+public class StoreCreateRequestDto {
 
     @NotNull(message = "가게명을 작성해주세요.")
     @Size(max = 50, message = "가게명은 50자를 초과할 수 없습니다.")
@@ -36,7 +36,7 @@ public class StoreCreateRequest {
     private final LocalTime operationClosedAt;
 
     @Builder
-    public StoreCreateRequest(String name, Long memberId, AddressRequest address, UUID categoryId, String imageUrl, Long minOrderPrice,  LocalTime operationStartedAt, LocalTime operationClosedAt) {
+    public StoreCreateRequestDto(String name, Long memberId, AddressRequest address, UUID categoryId, String imageUrl, Long minOrderPrice, LocalTime operationStartedAt, LocalTime operationClosedAt) {
         this.name = name;
         this.memberId = memberId;
         this.address = address;

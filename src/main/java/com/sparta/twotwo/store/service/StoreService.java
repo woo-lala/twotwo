@@ -6,8 +6,6 @@ import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.store.dto.request.AddressRequest;
 import com.sparta.twotwo.store.dto.request.AddressUpdateRequest;
-import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
-import com.sparta.twotwo.store.dto.request.StoreUpdateRequest;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;

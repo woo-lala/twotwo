@@ -4,7 +4,7 @@ import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.store.dto.request.AddressRequest;
-import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
+import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
@@ -167,7 +167,7 @@ public class StoreServiceTest {
                 .build();
 
 
-        StoreCreateRequest request = StoreCreateRequest.builder()
+        StoreCreateRequestDto request = StoreCreateRequestDto.builder()
                 .name(duplicatedName)
                 .memberId(member.getMember_id())
                 .address(new AddressRequest("sido", "sigg", "emd", "admCode", "zipNum","roadAddress","detailAddress"))
