@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public class StoreUpdateRequest {
+public class StoreUpdateRequestDto {
 
     @Size(max = 50, message = "가게명은 50자를 초과할 수 없습니다.")
     public final String name;

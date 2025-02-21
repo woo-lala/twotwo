@@ -1,8 +1,6 @@
 package com.sparta.twotwo.store.dto.response;
 
-import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Area;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public class AreaResonse {
+public class AreaResonseDto {
 
     private final UUID id;
     private final String sido;
@@ -19,8 +17,8 @@ public class AreaResonse {
     private final String admCode;
     private final String zipNum;
 
-    public static AreaResonse from(Area area) {
-        return new AreaResonse(
+    public static AreaResonseDto from(Area area) {
+        return new AreaResonseDto(
                 area.getId(),
                 area.getSido(),
                 area.getSigg(),
