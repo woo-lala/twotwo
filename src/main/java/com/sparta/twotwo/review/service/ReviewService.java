@@ -1,8 +1,10 @@
 package com.sparta.twotwo.review.service;
 
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
+import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.repository.OrderRepository;
@@ -19,6 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -31,7 +37,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto createReview(CreateReviewRequestDto requestDto) {
-        Member member = findMember(requestDto.getMemberId());
+        Member member = findMember(authenticateMember());
         // 사용자의 주문인지 확인하는 로직 구현 필요
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
@@ -43,29 +49,41 @@ public class ReviewService {
 
     public Page<ReviewResponseDto> getReviews(int page, int size, String sortBy, boolean isAsc) {
         Pageable pageable = createPageable(page, size, isAsc, sortBy);
+        Member member = findMember(authenticateMember());
 
-        Page<Review> reviewList = reviewRepository.findByIsHiddenFalseAndIsDeletedFalse(pageable);
+        Page<Review> reviewList;
+        if (hasManagerOrMasterRole(member.getRoles())) {
+            reviewList = reviewRepository.findByIsDeletedFalse(pageable);
+        } else {
+            reviewList = reviewRepository.findByIsHiddenFalseAndIsDeletedFalse(pageable);
+        }
 
         return reviewList.map(ReviewResponseDto::new);
     }
 
     public ReviewResponseDto getReview(UUID reviewId) {
-        // MANAGER, MASTER 를 제외한 권한은
-        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
+        Member member = findMember(authenticateMember());
         Review review = findReview(reviewId);
+
+        validateReviewAvailability(review);
+
+        if (hasManagerOrMasterRole(member.getRoles())){
+            return new ReviewResponseDto(review);
+        }
+
+        if (review.getIsHidden()) {
+            validateMemberAuthentication(review);
+        }
 
         return new ReviewResponseDto(review);
     }
 
     @Transactional
     public ReviewResponseDto updateReview(UUID reviewId, UpdateReviewRequestDto requestDto) {
-        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
         Review review = findReview(reviewId);
+        validateMemberAuthentication(review);
 
-        review.setRating(requestDto.getRating() != null ? requestDto.getRating() : review.getRating());
-        review.setTitle(requestDto.getTitle() != null ? requestDto.getTitle() : review.getTitle());
-        review.setContent(requestDto.getContent() != null ? requestDto.getContent() : review.getContent());
-
+        updateReviewFields(review, requestDto);
         review.update(review);
 
         return new ReviewResponseDto(review);
@@ -74,12 +92,15 @@ public class ReviewService {
     @Transactional
     public void deleteReview(UUID reviewId) {
         Review review = findReview(reviewId);
+        Member member = findMember(authenticateMember());
 
-        // MANAGER, MASTER 를 제외한 권한은
-        // 로그인된 사용자의 memberId와 Review의 memberId가 일치하는지 확인 필요
+        if (!hasManagerOrMasterRole(member.getRoles())) {
+            validateMemberAuthentication(review);
+        }
+
         review.setIsDeleted(true);
-        // deleted_at, deleted_by 로직 추가
-
+        review.setDeletedBy(authenticateMember());
+        review.setDeletedAt(LocalDateTime.now());
     }
 
     private Member findMember(Long memberId) {
@@ -98,4 +119,31 @@ public class ReviewService {
         return PageRequest.of(page, size, sort);
     }
 
+    private Long authenticateMember() {
+        return SecurityUtil.getMemberIdFromSecurityContext();
+    }
+
+    private void updateReviewFields(Review review, UpdateReviewRequestDto requestDto) {
+        review.setRating(requestDto.getRating() != null ? requestDto.getRating() : review.getRating());
+        review.setTitle(requestDto.getTitle() != null ? requestDto.getTitle() : review.getTitle());
+        review.setContent(requestDto.getContent() != null ? requestDto.getContent() : review.getContent());
+        review.setIsHidden(requestDto.isHidden());
+    }
+
+    private boolean hasManagerOrMasterRole(Set<String> roles) {
+        return roles.contains(RolesEnum.MANAGER.toString()) || roles.contains(RolesEnum.MASTER.toString());
+    }
+
+    // 로그인된 사용자의 memberId가 해당 리뷰의 memberId와 일치하는지 확인
+    private void validateMemberAuthentication(Review review) {
+        if (!Objects.equals(authenticateMember(), review.getMember().getMember_id())) {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    private void validateReviewAvailability(Review review) {
+        if (review.getIsDeleted()) {
+            throw new TwotwoApplicationException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+    }
 }

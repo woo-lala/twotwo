@@ -12,7 +12,6 @@ import java.util.UUID;
 public class ProductResponseDto {
     private UUID productId;
     private UUID storeId;
-    private UUID categoryId;
     private UUID descriptionId;
     private String description;
     private String productName;

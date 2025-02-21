@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -36,18 +36,22 @@ public class Member extends AuditableEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "p_member_roles")
-    private List<String> roles = new ArrayList<>();
+    private Set<String> roles = new HashSet<>();
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private MemberStatusEnum memberStatus =  MemberStatusEnum.ACTIVE;
+    private MemberStatusEnum memberStatus = MemberStatusEnum.ACTIVE;
 
-    public Member(String username, String nickname, String email, String password, List<String> roles, boolean is_public) {
+    public Member(String username, String nickname, String email, String password, Set<String> roles, boolean is_public) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.roles = roles;
         this.is_public = is_public;
+    }
+
+    public void addRole(RolesEnum role) {
+        this.roles.add(role.getAuthority());
     }
 }

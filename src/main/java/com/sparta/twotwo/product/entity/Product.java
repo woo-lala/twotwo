@@ -4,8 +4,12 @@ import com.sparta.twotwo.ai.entity.AIRequestLog;
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -16,24 +20,15 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_product")
 public class Product extends BaseEntity {
-
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id", columnDefinition = "BINARY(16)", nullable = false)
     private Store store;
-
-    // 나중에 categoryId 외래 키 설정 수정하기
-    @Column(name = "category_id", nullable = false)
-    private UUID categoryId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", nullable = false)
-//    private Category category;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "description_id")

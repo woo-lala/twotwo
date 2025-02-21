@@ -38,8 +38,4 @@ public class AIRequestLog extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AIRequestStatus status;
-
-    public AIRequestLog(UUID id) {
-        this.id = id;
-    }
 }

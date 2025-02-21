@@ -8,6 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
@@ -15,21 +19,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 public class JwtUtilTest {
 
     private JwtUtil jwtUtil;
     private Member mockMember;
+    @Value("${jwt-master-email}")
+    private String masterEmail;
+    @Autowired
+    private AuthorityUtil authorityUtil;
 
     @BeforeEach
     void setUp() {
         jwtUtil = new JwtUtil();
-        AuthorityUtil authorityUtil = new AuthorityUtil();
         mockMember = Mockito.mock(Member.class);
-        List<String> roles = authorityUtil.createRoles("master@email.com");
-
-
-        when(mockMember.getUsername()).thenReturn("testUser");
-        when(mockMember.getRoles()).thenReturn(roles);
+        System.out.println("Master Email: " + masterEmail);
+        when(mockMember.getMember_id()).thenReturn(1L);
+        when(mockMember.getUsername()).thenReturn("testUser01");
+        when(mockMember.getRoles()).thenReturn(authorityUtil.createRoles(masterEmail));
     }
 
     @Test
@@ -39,14 +46,5 @@ public class JwtUtilTest {
         assertTrue(token.startsWith("eyJ"));
 
         System.out.println("Generated Token: " + token);
-    }
-
-    @Test
-    void testAddJwtCookie() {
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        jwtUtil.addJwtCookie("testToken", response);
-
-
-        verify(response, times(1)).addCookie(any(Cookie.class));
     }
 }

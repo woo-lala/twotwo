@@ -12,7 +12,6 @@ public class ProductMenuResponseDto {
 
     private final UUID id;
     private final String productName;
-    private final UUID categoryId;
     private final String description;
     private final int price;
     private final String imageUrl;
@@ -22,7 +21,6 @@ public class ProductMenuResponseDto {
         return new ProductMenuResponseDto(
                 product.getId(),
                 product.getProductName(),
-                product.getCategoryId(),
                 product.getDescription(),
                 product.getPrice(),
                 product.getImageUrl(),
