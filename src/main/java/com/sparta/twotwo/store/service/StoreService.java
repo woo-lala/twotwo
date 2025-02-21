@@ -1,9 +1,12 @@
 package com.sparta.twotwo.store.service;
 
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
+import com.sparta.twotwo.product.entity.Product;
+import com.sparta.twotwo.product.service.ProductService;
 import com.sparta.twotwo.store.dto.request.AddressRequest;
 import com.sparta.twotwo.store.dto.request.AddressUpdateRequest;
 import com.sparta.twotwo.store.entity.Address;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +36,7 @@ public class StoreService {
     private final StoreCategoryRepository storeCategoryRepository;
     private final MemberRepository memberRepository;
     private final AddressService addressService;
+    private final ProductService productService;
 
     public Page<Store> getAllStores(Pageable pageable) {
         return storeRepository.findAll(pageable);
@@ -96,6 +101,12 @@ public class StoreService {
             LocalTime reqOperationStartedAt,
             LocalTime reqOperationClosedAt
     ) {
+        Long modifierId = getMemberIdFromSecurityContext();
+        Member modifier = getMemberOrException(modifierId);
+
+        if (!modifier.getRoles().contains("MASTER") && !modifier.getRoles().contains("MANAGER") && !modifier.getMember_id().equals(reqMemberId)) {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
 
         //가게 존재하는지 확인
         Store store = getStoreOrException(storeId);
@@ -126,12 +137,11 @@ public class StoreService {
         Optional.ofNullable(reqOperationStartedAt).ifPresent(store::updateOperationStartedAt);
         Optional.ofNullable(reqOperationClosedAt).ifPresent(store::updateOperationClosedAt);
 
-
-        //변경하는 사용자 id 가져오기
-        Long modifierId = getMemberIdFromSecurityContext();
+        //updatedBy 업데이트
         store.setUpdatedBy(modifierId);
 
         return storeRepository.save(store);
+
     }
 
     @Transactional
@@ -144,6 +154,13 @@ public class StoreService {
         store.setIsDeleted(Boolean.TRUE);
         store.setDeletedAt(LocalDateTime.now());
         store.setDeletedBy(deleterId);
+        store.setIsDeleted(Boolean.TRUE);
+
+        List<Product> products = store.getProducts();
+
+        for (Product product : products) {
+            productService.deleteProduct(product.getId());
+        }
 
         return storeRepository.saveAndFlush(store);
     }
@@ -155,15 +172,21 @@ public class StoreService {
     }
 
     private StoreCategory getCategoryOrException(UUID categoryId) {
-        return storeCategoryRepository.findById(categoryId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.NOT_FOUND));
+        return storeCategoryRepository.findById(categoryId).orElseThrow(
+                () -> new TwotwoApplicationException(ErrorCode.NOT_FOUND)
+        );
     }
 
     private Member getMemberOrException(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND));
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND)
+        );
     }
 
     private Store getStoreOrException(UUID storeId) {
-        return storeRepository.findById(storeId).orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
+        return storeRepository.findById(storeId).orElseThrow(
+                () -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND)
+        );
     }
 
 
