@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -129,7 +130,7 @@ public class ReviewService {
         review.setIsHidden(requestDto.isHidden());
     }
 
-    private boolean hasManagerOrMasterRole(List<String> roles) {
+    private boolean hasManagerOrMasterRole(Set<String> roles) {
         return roles.contains(RolesEnum.MANAGER.toString()) || roles.contains(RolesEnum.MASTER.toString());
     }
 

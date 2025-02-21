@@ -24,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,7 +151,7 @@ public class StoreServiceTest {
                 .name(duplicatedName)
                 .build();
 
-        List<String> roles = new ArrayList<>();
+        Set<String> roles = new HashSet<>();
         roles.add("MASTER");
 
         Member member = new Member("username", "nickname", "master@email.com", "password", roles, TRUE);
