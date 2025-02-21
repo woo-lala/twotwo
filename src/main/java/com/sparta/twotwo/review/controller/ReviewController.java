@@ -3,6 +3,7 @@ package com.sparta.twotwo.review.controller;
 import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
+import com.sparta.twotwo.review.dto.SearchReviewRequestDto;
 import com.sparta.twotwo.review.dto.UpdateReviewRequestDto;
 import com.sparta.twotwo.review.service.ReviewService;
 import jakarta.validation.Valid;
@@ -35,9 +36,11 @@ public class ReviewController {
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam("sortBy") String sortBy,
-            @RequestParam("isAsc") boolean isAsc
+            @RequestParam("isAsc") boolean isAsc,
+            @Valid
+            @RequestBody SearchReviewRequestDto requestDto
     ) {
-        Page<ReviewResponseDto> reviews = reviewService.getReviews(page-1, size, sortBy, isAsc);
+        Page<ReviewResponseDto> reviews = reviewService.getReviews(requestDto, page-1, size, sortBy, isAsc);
         return new ResponseEntity<>(ApiResponse.success(reviews), HttpStatus.OK);
     }
 
