@@ -25,14 +25,24 @@ public class AIService {
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
     @Transactional
-    public AIRequestLog generateProductDescription(Product product, String prompt) {
+    public AIRequestLog generateProductDescription(Product product) {
         AIRequestLog aiRequestLog = new AIRequestLog();
         aiRequestLog.setProduct(product);
-        aiRequestLog.setRequestText(prompt);
+//        aiRequestLog.setRequestText(prompt);
+//        aiRequestLog.setStatus(AIRequestStatus.PENDING);
+
+        // 요청 프롬포트 생성
+        String finalPrompt = String.format(
+                "상품명: %s. 이 상품을 간결하게 설명해줘 (50자 이하).",
+                product.getProductName()
+        );
+
+        aiRequestLog.setRequestText(finalPrompt);
         aiRequestLog.setStatus(AIRequestStatus.PENDING);
 
         try {
-            String response = callAIAPI(prompt);
+            // 요청한 프롬포트 전달
+            String response = callAIAPI(finalPrompt);
 
             if (response == null || response.isEmpty()) {
                 aiRequestLog.setStatus(AIRequestStatus.FAILED);
@@ -60,7 +70,10 @@ public class AIService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 //        headers.set("Authorization", "Bearer " + API_KEY);
 
-        String requestBody = String.format("{\"contents\":[{\"parts\":[{\"text\":\"%s 답변을 최대한 간결하게 50자 이하로\"}]}]}", prompt);
+        String requestBody = String.format(
+                "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
+                prompt
+        );
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(

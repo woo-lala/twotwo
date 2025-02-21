@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final AIRequestLogRepository aiRequestLogRepository;
     private final AIService aiService;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -48,34 +48,26 @@ public class ProductService {
             throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
         }
 
-        // AI 설명 없이 먼저 저장
         Product product = new Product();
         product.setStore(store);
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.getIsHidden() != null ? requestDto.getIsHidden() : false);
+        product.setIsHidden(requestDto.isHidden());
         product.setCreatedBy(createdBy);
-
-        if (requestDto.getDescription() != null && !requestDto.getDescription().trim().isEmpty()) {
-            product.setDescription(requestDto.getDescription());
-        } else {
-            CompletableFuture.runAsync(() -> {
-                AIRequestLog aiRequestLog = aiService.generateProductDescription(product,
-                        String.format("%s 설명을 생성해줘", product.getProductName()));
-
-                if (aiRequestLog != null) {
-                    product.setDescriptionLog(aiRequestLog);
-                    product.setDescription(aiRequestLog.getResponseText());
-                    productRepository.save(product);
-                } else {
-                    product.setDescription("설명이 준비되지 않았습니다.");
-                    productRepository.save(product);
-                }
-            });
-        }
+        product.setCreatedAt(LocalDateTime.now());
 
         Product savedProduct = productRepository.save(product);
+
+        // AI 설명 자동 생성
+        AIRequestLog aiRequestLog = aiService.generateProductDescription(savedProduct, "이 상품의 설명을 생성해줘");
+
+        if (aiRequestLog != null) {
+            savedProduct.setDescriptionLog(aiRequestLog);
+            savedProduct.setDescription(aiRequestLog.getResponseText());
+        }
+
+        savedProduct = productRepository.save(savedProduct);
 
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
@@ -138,29 +130,29 @@ public class ProductService {
 
         Long updatedBy = authenticateMember();
 
-        if (requestDto.getPrice() < 0) {
-            throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+        if (requestDto.getProductName() != null) {
+            product.setProductName(requestDto.getProductName());
         }
 
-        // 기본 정보 수정
-        product.setProductName(requestDto.getProductName());
-        product.setPrice(requestDto.getPrice());
-        product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.isHidden());
+        if (requestDto.getPrice() != null) {
+            if (requestDto.getPrice() < 0) {
+                throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+            }
+            product.setPrice(requestDto.getPrice());
+        }
+
+        if (requestDto.getImageUrl() != null) {
+            product.setImageUrl(requestDto.getImageUrl());
+        }
+
+        if (requestDto.getDescription() != null) {
+            product.setDescription(requestDto.getDescription());
+            // 요청에서 description이 포함됨 -> 사용자가 입력한 값으로 덮어씀
+            // 포함X -> 기존 설명 유지
+        }
+
         product.setUpdatedBy(updatedBy);
         product.setUpdatedAt(LocalDateTime.now());
-
-        if (requestDto.getDescription() == null || requestDto.getDescription().isBlank()) {
-            AIRequestLog aiRequestLog = aiService.generateProductDescription(product, "이 상품의 설명을 생성해줘");
-            if (aiRequestLog.getStatus() == AIRequestStatus.SUCCESS) {
-                product.setDescriptionLog(aiRequestLog);
-                product.setDescription(aiRequestLog.getResponseText());
-            } else {
-                product.setDescription("상품 설명이 생성되지 않았습니다.");
-            }
-        }
-
-        product = productRepository.save(product);
 
         return ProductUpdateResponseDto.builder()
                 .message("상품이 성공적으로 수정되었습니다.")
