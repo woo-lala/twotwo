@@ -113,6 +113,14 @@ public class OrderService {
 
     public Order updateOrder(UUID orderId, UUID productId, OrderProductRequestDto orderProductRequestDto) {
 
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (order.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
+            throw new TwotwoApplicationException(ErrorCode.TIMEOUT_UPDATE_ORDER);
+        }
+
+
         OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, productId);
         log.info("orderProduct {}", orderProduct.toString());
         Long prevPrice = orderProduct.getQuantity() * orderProduct.getProduct().getPrice();
@@ -122,10 +130,6 @@ public class OrderService {
                 .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
         orderProduct.changeProduct(product);
         orderProduct.changeQuantity(orderProductRequestDto.getQuantity());
-
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
 
         Long totalPrice = order.getPrice();
 
