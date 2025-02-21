@@ -10,6 +10,7 @@ import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.repository.OrderRepository;
 import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
+import com.sparta.twotwo.review.dto.SearchReviewRequestDto;
 import com.sparta.twotwo.review.dto.UpdateReviewRequestDto;
 import com.sparta.twotwo.review.entity.Review;
 import com.sparta.twotwo.review.repository.ReviewRepository;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -47,18 +47,11 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
-    public Page<ReviewResponseDto> getReviews(int page, int size, String sortBy, boolean isAsc) {
+    public Page<ReviewResponseDto> getReviews(SearchReviewRequestDto requestDto, int page, int size, String sortBy, boolean isAsc) {
         Pageable pageable = createPageable(page, size, isAsc, sortBy);
         Member member = findMember(authenticateMember());
 
-        Page<Review> reviewList;
-        if (hasManagerOrMasterRole(member.getRoles())) {
-            reviewList = reviewRepository.findByIsDeletedFalse(pageable);
-        } else {
-            reviewList = reviewRepository.findByIsHiddenFalseAndIsDeletedFalse(pageable);
-        }
-
-        return reviewList.map(ReviewResponseDto::new);
+        return reviewRepository.searchReviews(requestDto, pageable, hasManagerOrMasterRole(member.getRoles()));
     }
 
     public ReviewResponseDto getReview(UUID reviewId) {
