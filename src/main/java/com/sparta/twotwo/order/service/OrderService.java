@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -88,7 +89,7 @@ public class OrderService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        List<String> roles = member.getRoles();
+        Set<String> roles = member.getRoles();
 
         if(!roles.contains(RolesEnum.MANAGER.getAuthority()) && !roles.contains(RolesEnum.MASTER.getAuthority())){
             //TODO 권한 에러 추가

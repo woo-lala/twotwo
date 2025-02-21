@@ -66,10 +66,12 @@ public class SecurityConfig {
 
                     //review
                     .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
+
+                    //swagger
                     .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/swagger-resources/**").permitAll()
                     .requestMatchers("/v3/api-docs/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)
