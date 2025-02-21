@@ -58,7 +58,7 @@ public class MemberController {
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
     }
 
-    @PatchMapping("/{member_id}/grant/owner")
+    @PatchMapping("/grant/owner/{member_id}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> updateMemberAuth(@PathVariable("member_id") Long member_id) {
         Member member = memberService.addMemberAuth(member_id, RolesEnum.OWNER);
         MemberResponseDto response = new MemberResponseDto(member);
