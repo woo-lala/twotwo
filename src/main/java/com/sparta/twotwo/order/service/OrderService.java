@@ -56,31 +56,25 @@ public class OrderService {
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
         Order order = orderRequestDto.toOrderEntity(member, findStore);
 
-        //TODO Store not found 에러 추가
         List<OrderProductRequestDto> orderProductRequestDtos = orderRequestDto.getOrderProductRequestDtos();
 
         Long totalPrice = 0L;
         for(OrderProductRequestDto dto : orderProductRequestDtos) {
-            log.info("dto: {}", dto);
-
             Product product = productRepository.findById(dto.getProductId())
                     .orElseThrow(()-> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
-            log.info("product: {}", product);
+
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(order)
                     .product(product)
                     .quantity(dto.getQuantity())
                     .build();
 
-            log.info("@@@@@@@@@@@@orderProduct: {}", orderProduct);
             totalPrice += product.getPrice() * dto.getQuantity();
             //영속성 전이
             order.addOrderProductList(orderProduct);
         }
         
         order.setTotalPrice(totalPrice);
-
-        log.info("order: {}", order);
 
         Order savedOrder = orderRepository.save(order);
 
@@ -105,11 +99,6 @@ public class OrderService {
 
         List<Order> orderList = orders.getContent();
 
-// 주문 내용 출력
-        for (Order order : orderList) {
-            System.out.println(order);
-        }
-
         return orders;
     }
 
@@ -122,27 +111,31 @@ public class OrderService {
     }
 
 
-    public Order updateOrder(UUID orderId, UUID productId, OrderRequestDto orderRequestDto) {
+    public Order updateOrder(UUID orderId, UUID productId, OrderProductRequestDto orderProductRequestDto) {
 
         OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, productId);
         log.info("orderProduct {}", orderProduct.toString());
+        Long prevPrice = orderProduct.getQuantity() * orderProduct.getProduct().getPrice();
 
-//        Product product = productRepository.findById(orderRequestDto.getProductId())
-//                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
-//        orderProduct.changeProduct(product);
-//        orderProduct.changeQuantity(orderRequestDto.getQuantity());
-//
-//
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
-//
-//        order.calculateTotalPrice(orderProduct.getProduct().getPrice(), orderRequestDto.getQuantity());
-//
-//        orderRepository.save(order);
-//        orderProductRepository.save(orderProduct);
-//
-//        return order;
-        return null;
+
+        Product product = productRepository.findById(orderProductRequestDto.getProductId())
+                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.PRODUCT_NOT_FOUND));
+        orderProduct.changeProduct(product);
+        orderProduct.changeQuantity(orderProductRequestDto.getQuantity());
+
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+
+        Long totalPrice = order.getPrice();
+
+        order.setTotalPrice( totalPrice - prevPrice + (orderProduct.getProduct().getPrice() * orderProductRequestDto.getQuantity()));
+
+        orderRepository.save(order);
+        orderProductRepository.save(orderProduct);
+
+        return order;
+
     }
 
     public void deleteOrder(UUID orderId) {
@@ -152,16 +145,22 @@ public class OrderService {
         order.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
         order.setDeletedAt(LocalDateTime.now());
         orderRepository.save(order);
-        order.getOrderProducts().stream()
-                        .map(orderProduct ->{
-                            orderProduct.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
-                            orderProduct.setDeletedAt(LocalDateTime.now());
-                            return orderProduct;
-                        })
-                .forEach(orderProduct -> orderProductRepository.save(orderProduct));
+        orderRepository.flush();
 
+
+        log.info("order {}", order.toString());
+        // 주문 상품 삭제 정보 업데이트
+        order.getOrderProducts().forEach(orderProduct -> {
+            orderProduct.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
+            orderProduct.setDeletedAt(LocalDateTime.now());
+            orderProductRepository.save(orderProduct);
+        });
+
+
+        orderRepository.flush();
 
         orderRepository.deleteById(orderId);
+
 
     }
 

@@ -55,7 +55,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<OrderProduct> orderProducts;
 
     public void addOrderProductList(OrderProduct orderProduct) {
@@ -101,6 +101,8 @@ public class Order extends BaseEntity {
                 ", member=" + member +
                 ", store=" + store +
                 ", orderProducts=" + orderProducts +
+                ", deleteby=" + getDeletedBy() +
+                ", deleteat=" + getDeletedAt() +
                 '}';
     }
 
