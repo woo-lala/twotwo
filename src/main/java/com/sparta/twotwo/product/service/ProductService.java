@@ -51,7 +51,6 @@ public class ProductService {
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.getIsHidden() != null ? requestDto.getIsHidden() : false);
         product.setCreatedBy(createdBy);
         product.setCreatedAt(LocalDateTime.now());
 
@@ -72,7 +71,6 @@ public class ProductService {
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
                 .imageUrl(savedProduct.getImageUrl())
-                .isHidden(savedProduct.getIsHidden())
                 .createdAt(savedProduct.getCreatedAt().format(FORMATTER))
                 .createdBy(savedProduct.getCreatedBy())
                 .build();
@@ -168,6 +166,7 @@ public class ProductService {
         product.setDeletedBy(deletedBy);
         product.setDeletedAt(LocalDateTime.now());
         product.setIsDeleted(true);
+        product.setIsHidden(true);
 
         return ProductDeleteResponseDto.builder()
                 .productId(product.getId())
