@@ -8,18 +8,20 @@ import com.sparta.twotwo.members.dto.MemberRequestDto;
 import com.sparta.twotwo.members.dto.SignupRequestDto;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.entity.MemberStatusEnum;
+import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,50 +38,75 @@ public class MemberService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         boolean is_public = requestDto.is_public();
-        List<String> roles = authorityUtil.createRoles(email);
+        Set<String> roles = authorityUtil.createRoles(email);
 
         existEmail(email);
         existUsername(username);
 
         Member member = new Member(username, nickname, email, password, roles, is_public);
-        member.setCreatedBy(member.getMember_id());
+
+        Long defaultCreateBy = 0L;
+        member.setCreatedBy(defaultCreateBy);
 
         memberRepository.save(member);
     }
 
-    public Page<Member> getMembers(Pageable pageable) {
+    public Page<Member> getMembers(String role, int size, int page, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "createdAt");
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        return memberRepository.findAll(pageable);
+        if(role == null) {
+           return memberRepository.findAll(pageable);
+        }
+        return memberRepository.findByRolesContaining(role, pageable);
     }
 
     public Member getMember(Long memberId) {
-
-        return findMember(memberId);
+        Member member = findMember(memberId);
+        if(!member.is_public()) {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
+        return member;
     }
 
     @Transactional
     public Member updateMember(Long memberId, MemberRequestDto requestDto) {
-        Member member = findMember(memberId);
+        Member authMember = findMember(authenticateMember());
+        if(authMember.getRoles().contains("MASTER") || authMember.getMember_id().equals(memberId)) {
+            Member member = findMember(memberId);
 
-        member.setUpdatedBy(authenticateMember());
-        member.setUpdatedAt(LocalDateTime.now());
+            Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
+            Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
 
-        Optional.ofNullable(requestDto.getNickname()).ifPresent(member::setNickname);
-        Optional.ofNullable(requestDto.getPassword()).ifPresent(member::setPassword);
+            return member;
+        } else {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
+    }
 
-        return memberRepository.save(member);
+    @Transactional
+    public Member addMemberAuth(Long memberId, RolesEnum role) {
+            Member member = findMember(memberId);
+            member.addRole(role);
+
+            return member;
     }
 
     public void deleteMember(Long memberId) {
         Member member = findMember(memberId);
+        Member authMember = findMember(authenticateMember());
+        if(authMember.getRoles().contains("MASTER") || authMember.getMember_id().equals(memberId)) {
+            member.setMemberStatus(MemberStatusEnum.DELETE);
+            member.setDeletedBy(authenticateMember());
+            member.setDeletedAt(LocalDateTime.now());
 
-        member.setMemberStatus(MemberStatusEnum.DELETE);
-        member.setDeletedBy(authenticateMember());
-        member.setDeletedAt(LocalDateTime.now());
+            System.out.println("token id: " + SecurityUtil.getMemberIdFromSecurityContext());
 
-        System.out.println("token id: " + SecurityUtil.getMemberIdFromSecurityContext());
-
-        memberRepository.save(member);
+            memberRepository.save(member);
+        } else {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
     }
 
     public void existEmail(String email) {
@@ -108,5 +135,4 @@ public class MemberService {
     public Long authenticateMember() {
         return SecurityUtil.getMemberIdFromSecurityContext();
     }
-
 }

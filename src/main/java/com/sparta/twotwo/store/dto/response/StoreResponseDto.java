@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public class StoreResponse {
+public class StoreResponseDto {
 
     private final UUID id;
     private final String imageUrl;
@@ -19,8 +19,8 @@ public class StoreResponse {
     private final BigDecimal rating;
     private final Integer reviewCount;
 
-    public static StoreResponse from(Store store) {
-        return new StoreResponse(
+    public static StoreResponseDto from(Store store) {
+        return new StoreResponseDto(
                 store.getId(),
                 store.getImageUrl(),
                 store.getName(),

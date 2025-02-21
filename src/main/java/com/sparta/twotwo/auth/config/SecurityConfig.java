@@ -43,6 +43,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/members/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
+                    .requestMatchers(HttpMethod.PATCH, "/api/members/grant/**").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     //store
@@ -52,11 +53,16 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("OWNER", "MANAGER")
                     .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
                     .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
-
+//                    .requestMatchers("/api/products").permitAll()
 
                     //orders
-                    .requestMatchers("/api/orders/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
 
+                    //categories
+                    .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("MASTER", "MANAGER")
 
                     //review
                     .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")

@@ -4,7 +4,7 @@ import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.store.dto.request.AddressRequest;
-import com.sparta.twotwo.store.dto.request.StoreCreateRequest;
+import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
@@ -24,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,7 +151,7 @@ public class StoreServiceTest {
                 .name(duplicatedName)
                 .build();
 
-        List<String> roles = new ArrayList<>();
+        Set<String> roles = new HashSet<>();
         roles.add("MASTER");
 
         Member member = new Member("username", "nickname", "master@email.com", "password", roles, TRUE);
@@ -166,10 +164,15 @@ public class StoreServiceTest {
                 .build();
 
 
-        StoreCreateRequest request = StoreCreateRequest.builder()
+        StoreCreateRequestDto request = StoreCreateRequestDto.builder()
                 .name(duplicatedName)
                 .memberId(member.getMember_id())
-                .address(addressRequest)
+                .address(new AddressRequest("sido", "sigg", "emd", "admCode", "zipNum","roadAddress","detailAddress"))
+                .categoryId(UUID.randomUUID())
+                .imageUrl("imageUrl")
+                .minOrderPrice(0L)
+                .operationStartedAt(LocalTime.now())
+                .operationClosedAt(LocalTime.now())
                 .build();
 
         StoreCategory category = StoreCategory.builder().name("카테고리 A").build();
@@ -182,7 +185,15 @@ public class StoreServiceTest {
 
         //then
         assertThrows(TwotwoApplicationException.class, () -> {
-            storeService.saveStore(request);
+            storeService.saveStore(
+                    request.getName(),
+                    request.getMemberId(),
+                    request.getAddress(),
+                    request.getCategoryId(),
+                    request.getImageUrl(),
+                    request.getMinOrderPrice(),
+                    request.getOperationStartedAt(),
+                    request.getOperationClosedAt());
         });
     }
 

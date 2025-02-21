@@ -14,8 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -56,10 +58,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(Map<String, Object> claims) { //SecurityContext 에 member_id 와 roles 저장
-//        String username = claims.get("username").toString();
-        log.info("Security contextHolder 설정");
         Long memberId = Long.valueOf(claims.get("member_id").toString());
-        List<GrantedAuthority> authorities = authorityUtil.createAuthorities((List<String>) claims.get("roles"));
+        Set<String> roles = new HashSet<>((List<String>) claims.get("roles"));
+
+        Set<GrantedAuthority> authorities = authorityUtil.createAuthorities(roles);
         Authentication authentication = new UsernamePasswordAuthenticationToken(memberId, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
