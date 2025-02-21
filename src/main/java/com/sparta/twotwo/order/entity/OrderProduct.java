@@ -3,6 +3,7 @@ package com.sparta.twotwo.order.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.enums.OrderType;
+import com.sparta.twotwo.order.dto.OrderProductDto;
 import com.sparta.twotwo.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +46,20 @@ public class OrderProduct extends BaseEntity {
         this.quantity = quantity;
     }
 
+    public OrderProductDto toDto(){
+        return OrderProductDto.builder()
+                .orderProductId(orderProductId)
+                .order(order.getOrder_id())
+                .product(product.getId())
+                .quantity(quantity)
+                .build();
+    }
 
-
+    @Override
+    public String toString() {
+        return "OrderProduct{" +
+                "orderProductId=" + orderProductId +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

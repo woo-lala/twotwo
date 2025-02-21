@@ -57,6 +57,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private void setAuthentication(Map<String, Object> claims) { //SecurityContext 에 member_id 와 roles 저장
 //        String username = claims.get("username").toString();
+        log.info("Security contextHolder 설정");
         Long memberId = Long.valueOf(claims.get("member_id").toString());
         List<GrantedAuthority> authorities = authorityUtil.createAuthorities((List<String>) claims.get("roles"));
         Authentication authentication = new UsernamePasswordAuthenticationToken(memberId, null, authorities);

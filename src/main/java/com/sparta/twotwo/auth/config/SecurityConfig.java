@@ -55,6 +55,8 @@ public class SecurityConfig {
 
 
                     //orders
+                    .requestMatchers("/api/orders/**").permitAll()
+
 
                     //review
                     .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")

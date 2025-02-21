@@ -16,8 +16,10 @@ import com.sparta.twotwo.order.repository.OrderRepository;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
 import com.sparta.twotwo.store.entity.Store;
-import com.sparta.twotwo.store.entity.repository.StoreRepository;
+
+import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -62,30 +65,36 @@ public class OrderService {
     }
 
 
-    public Page<OrderResponseDto> getOrders(int page, int size, String sortBy, boolean isAsc, Member member) {
+    public Page<Order> getOrders(int page, int size, String sortBy, boolean isAsc, Member member) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
         List<String> roles = member.getRoles();
-        if(!roles.contains(RolesEnum.MANAGER) || !roles.contains(RolesEnum.MASTER)){
+
+        if(!roles.contains(RolesEnum.MANAGER.getAuthority()) && !roles.contains(RolesEnum.MASTER.getAuthority())){
             //TODO 권한 에러 추가
             throw new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND);
         }
 
-
-
         Page<Order> orders = orderRepository.findAll(pageable);
 
-        return orders.map(Order::toResponseDto);
+        List<Order> orderList = orders.getContent();
+
+// 주문 내용 출력
+        for (Order order : orderList) {
+            System.out.println(order);
+        }
+
+        return orders;
     }
 
 
-    public OrderResponseDto getOrderById(UUID orderId) {
+    public Order getOrderById(UUID orderId) {
 
-
-        return orderRepository.findById(orderId).map(Order::toResponseDto)
-                .orElseThrow(()->new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = orderRepository.findByOrderId(orderId);
+        log.info("order {}", order.toString());
+        return order;
     }
 
 
@@ -95,7 +104,7 @@ public class OrderService {
 
         order.changeOrderTYpe(orderRequestDto.getOrderType());
 
-        OrderProduct orderProduct = orderProductRepository.findByOrder_OrderIdAndProductId(orderId, orderRequestDto.getProductId());
+        OrderProduct orderProduct = orderProductRepository.findByOrderIdAndProductId(orderId, orderRequestDto.getProductId());
         orderProduct.changeQuantity(orderRequestDto.getQuantity());
 
         return order.toResponseDto();

@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -19,11 +20,12 @@ import java.util.UUID;
 public class Order extends BaseEntity {
 
     @Builder
-    public Order(OrderType order_type, Long price, Member member, Store store) {
+    public Order(OrderType order_type, Long price, Member member, Store store, List<OrderProduct> orderProducts) {
         this.order_type = order_type;
         this.price = price;
         this.member = member;
         this.store = store;
+        this.orderProducts = orderProducts;
     }
 
     @Id
@@ -38,7 +40,6 @@ public class Order extends BaseEntity {
 
     @Column(name = "price", nullable = false)
     private Long price;
-
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -64,10 +65,23 @@ public class Order extends BaseEntity {
                 .price(price)
                 .memberId(member.getMember_id())
                 .storeId(store.getId())
-                .orderProduct(orderProducts)
+                .orderProduct(orderProducts.stream()
+                        .map(OrderProduct::toDto)
+                        .collect(Collectors.toList()))
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "order_id=" + order_id +
+                ", order_type=" + order_type +
+                ", price=" + price +
+                ", member=" + member +
+                ", store=" + store +
+                ", orderProducts=" + orderProducts +
+                '}';
+    }
 }
