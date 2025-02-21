@@ -4,6 +4,7 @@ import com.sparta.twotwo.review.entity.Review;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class StoreScheduler {
     private final StoreRepository storeRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 * * * *")
+//    @Scheduled(cron = "0 0 * * * *")
     public void updateAverageStoreRatingsAndReviewCountTaskUsingDatabase() {
 
         List<Object[]> reviewStats = storeRepository.findAverageRatingsAndReviewCount();
@@ -33,23 +34,29 @@ public class StoreScheduler {
 
     }
 
-//    @Scheduled(cron = "0 0 * * * *")
-    public void updateAverageStoreRatingsAndReviewCountTaskForMultiThread() {
+    @Scheduled(fixedRate = 1000000)
+    public void updateStoreReviewStats() {
 
         List<Store> stores = storeRepository.findStoresWithReviews();
 
         for (Store store : stores) {
-            List<Review> reviews = store.getReviews();
-            Integer reviewCount = reviews.size();
-
-            double averageRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-
-            store.updateRating(BigDecimal.valueOf(averageRating));
-            store.updateReviewCount(reviewCount);
-
-            storeRepository.saveAndFlush(store);
-
+            calculateAndSaveStoreRatingsAsync(store);
         }
+
+    }
+
+    @Async
+    @Transactional
+    public void calculateAndSaveStoreRatingsAsync(Store store) {
+        List<Review> reviews = store.getReviews();
+        Integer reviewCount = reviews.size();
+
+        double averageRating = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
+
+        store.updateRating(BigDecimal.valueOf(averageRating));
+        store.updateReviewCount(reviewCount);
+
+        storeRepository.saveAndFlush(store);
     }
 
 }
