@@ -8,6 +8,7 @@ import com.sparta.twotwo.store.dto.request.StoreUpdateRequestDto;
 import com.sparta.twotwo.store.dto.response.StoreDetailResponseDto;
 import com.sparta.twotwo.store.dto.response.StoreResponseDto;
 import com.sparta.twotwo.store.entity.Store;
+import com.sparta.twotwo.store.mapper.StoreMapper;
 import com.sparta.twotwo.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class StoreController {
 
     private final StoreService storeService;
+    private final StoreMapper storeMapper;
 
     /**
      * 가게 전체 조회
@@ -74,39 +76,22 @@ public class StoreController {
     public ResponseEntity<ApiResponse<StoreDetailResponseDto>> createStore(
             @Valid @RequestBody StoreCreateRequestDto request
     ) throws Exception {
-        Store store = storeService.saveStore(
-                request.getName(),
-                request.getMemberId(),
-                request.getAddress(),
-                request.getCategoryId(),
-                request.getImageUrl(),
-                request.getMinOrderPrice(),
-                request.getOperationStartedAt(),
-                request.getOperationClosedAt()
-        );
+        Store reqStore = storeMapper.toStore(request);
+        Store store = storeService.saveStore(reqStore);
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponseDto.from(store)));
     }
 
     /**
      * 가게 수정
-     * 사용자 권한 (Master, Manager)
+     * 사용자 권한 (Master, Manager, Owner)
      */
     @PatchMapping("/stores/{storeId}")
     public ResponseEntity<ApiResponse<StoreDetailResponseDto>> updateStore(
             @PathVariable UUID storeId,
             @Valid @RequestBody StoreUpdateRequestDto request
     ) throws Exception {
-        Store store = storeService.updateStore(
-                storeId,
-                request.getName(),
-                request.getMemberId(),
-                request.getAddress(),
-                request.getCategoryId(),
-                request.getImageUrl(),
-                request.getMinOrderPrice(),
-                request.getOperationStartedAt(),
-                request.getOperationClosedAt()
-        );
+        Store reqStore = storeMapper.toStore(request);
+        Store store = storeService.updateStore(storeId, reqStore);
         return ResponseEntity.ok(ApiResponse.success(StoreDetailResponseDto.from(store)));
     }
 
