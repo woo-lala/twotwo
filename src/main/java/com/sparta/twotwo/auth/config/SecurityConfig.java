@@ -57,7 +57,7 @@ public class SecurityConfig {
                     //orders
                     .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER", "OWNER")
                     .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("MASTER", "MANAGER")
 
                     //categories
