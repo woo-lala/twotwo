@@ -17,7 +17,6 @@ public class ProductResponseDto {
     private String productName;
     private int price;
     private String imageUrl;
-    private boolean isHidden;
     private String createdAt;
     private Long createdBy;
     private String updatedAt;

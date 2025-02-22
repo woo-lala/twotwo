@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Builder
 public class ProductDeleteResponseDto {
-    private String message;
     private UUID productId;
     private String deletedAt;
     private Long deletedBy;

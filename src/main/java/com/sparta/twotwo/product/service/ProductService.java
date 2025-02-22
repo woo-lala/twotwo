@@ -51,7 +51,6 @@ public class ProductService {
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.getIsHidden() != null ? requestDto.getIsHidden() : false);
         product.setCreatedBy(createdBy);
         product.setCreatedAt(LocalDateTime.now());
 
@@ -72,7 +71,6 @@ public class ProductService {
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
                 .imageUrl(savedProduct.getImageUrl())
-                .isHidden(savedProduct.getIsHidden())
                 .createdAt(savedProduct.getCreatedAt().format(FORMATTER))
                 .createdBy(savedProduct.getCreatedBy())
                 .build();
@@ -84,7 +82,13 @@ public class ProductService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + storeId));
 
-        return productRepository.findByStore(store).stream()
+        List<Product> products = productRepository.findByStoreAndIsDeletedFalse(store);
+
+        if (products.isEmpty()) {
+            throw new IllegalArgumentException("해당 가게에 등록된 상품이 없습니다.");
+        }
+
+        return products.stream()
                 .map(product -> ProductListResponseDto.builder()
                         .productId(product.getId())
                         .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
@@ -92,7 +96,6 @@ public class ProductService {
                         .productName(product.getProductName())
                         .price(product.getPrice())
                         .imageUrl(product.getImageUrl())
-                        .isHidden(product.getIsHidden())
                         .createdAt(product.getCreatedAt().format(FORMATTER))
                         .build())
                 .collect(Collectors.toList());
@@ -100,8 +103,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
+        Product product = productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. 삭제되었거나 존재하지 않는 상품입니다: " + productId));
 
         return ProductResponseDto.builder()
                 .productId(product.getId())
@@ -111,7 +114,6 @@ public class ProductService {
                 .productName(product.getProductName())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
-                .isHidden(product.getIsHidden())
                 .createdAt(product.getCreatedAt().format(FORMATTER))
                 .createdBy(product.getCreatedBy())
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().format(FORMATTER) : null)
@@ -136,8 +138,6 @@ public class ProductService {
                 throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
             }
             product.setPrice(requestDto.getPrice());
-        } else {
-            throw new IllegalArgumentException("상품 가격은 반드시 입력해야 합니다.");
         }
 
         if (requestDto.getImageUrl() != null) {
@@ -154,7 +154,6 @@ public class ProductService {
         product.setUpdatedAt(LocalDateTime.now());
 
         return ProductUpdateResponseDto.builder()
-                .message("상품이 성공적으로 수정되었습니다.")
                 .productId(product.getId())
                 .updatedAt(product.getUpdatedAt().format(FORMATTER))
                 .updatedBy(updatedBy)
@@ -171,9 +170,9 @@ public class ProductService {
         product.setDeletedBy(deletedBy);
         product.setDeletedAt(LocalDateTime.now());
         product.setIsDeleted(true);
+        product.setIsHidden(true);
 
         return ProductDeleteResponseDto.builder()
-                .message("상품이 성공적으로 삭제되었습니다.")
                 .productId(product.getId())
                 .deletedAt(product.getDeletedAt().format(FORMATTER))
                 .deletedBy(deletedBy)

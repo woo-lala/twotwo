@@ -20,6 +20,5 @@ public class ProductListResponseDto {
     private String productName;
     private int price;
     private String imageUrl;
-    private boolean isHidden;
     private String createdAt;
 }
