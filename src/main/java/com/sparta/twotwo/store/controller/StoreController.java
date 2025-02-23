@@ -1,7 +1,5 @@
 package com.sparta.twotwo.store.controller;
 
-import com.sparta.twotwo.common.exception.ErrorCode;
-import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreUpdateRequestDto;
@@ -49,9 +47,7 @@ public class StoreController {
     public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetails(
             @PathVariable UUID storeId
     ) {
-        return ResponseEntity.ok(ApiResponse.success(StoreDetailResponseDto.from(storeService.getStoreDetails(storeId).orElseThrow(
-                () -> new TwotwoApplicationException(ErrorCode.STORE_BAD_REQUEST)))
-        ));
+        return ResponseEntity.ok(ApiResponse.success(StoreDetailResponseDto.from(storeService.getStoreDetails(storeId))));
     }
 
     /**

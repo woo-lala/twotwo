@@ -1,5 +1,6 @@
 package com.sparta.twotwo.store.service;
 
+import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
@@ -28,18 +29,22 @@ import static com.sparta.twotwo.auth.util.SecurityUtil.getMemberIdFromSecurityCo
 @RequiredArgsConstructor
 public class StoreService {
 
+    private final SecurityUtil securityUtil;
     private final StoreRepository storeRepository;
     private final StoreCategoryRepository storeCategoryRepository;
     private final MemberRepository memberRepository;
     private final AddressService addressService;
     private final ProductService productService;
 
+
     public Page<Store> getAllStores(Pageable pageable) {
         return storeRepository.findAll(pageable);
     }
 
-    public Optional<Store> getStoreDetails(UUID storeId) {
-        return storeRepository.findById(storeId);
+    public Store getStoreDetails(UUID storeId) {
+
+        return getStoreOrException(storeId);
+
     }
 
     public Page<Store> getStoresByCategory(UUID categoryId, Pageable pageable) {
@@ -78,15 +83,12 @@ public class StoreService {
 
     @Transactional
     public Store updateStore(UUID storeId, Store reqStore) {
-        Long modifierId = getMemberIdFromSecurityContext();
+
+        Long modifierId = securityUtil.getMemberId();
         Member modifier = getMemberOrException(modifierId);
-
-        if (!modifier.getRoles().contains("MASTER") && !modifier.getRoles().contains("MANAGER") && !modifier.getMember_id().equals(reqStore.getMember().getMember_id())) {
-            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
-        }
-
         Store store = getStoreOrException(storeId);
 
+        validateMember(modifier, store);
         validateStoreName(reqStore.getName());
 
         Optional.ofNullable(reqStore.getCategory()).ifPresent(storeCategory -> {
@@ -120,9 +122,12 @@ public class StoreService {
 
     @Transactional
     public Store deleteStore(UUID storeId) {
-        Store store = getStoreOrException(storeId);
 
-        Long deleterId = getMemberIdFromSecurityContext();
+        Long deleterId = securityUtil.getMemberId();
+        Store store = getStoreOrException(storeId);
+        Member deleter = getMemberOrException(deleterId);
+
+        validateMember(deleter, store);
 
         store.setIsDeleted(Boolean.TRUE);
         store.setDeletedAt(LocalDateTime.now());
@@ -144,6 +149,12 @@ public class StoreService {
         });
     }
 
+    private void validateMember(Member member, Store store) {
+        if (!member.getRoles().contains("MASTER") && !member.getRoles().contains("MANAGER") && !member.getMember_id().equals(store.getMember().getMember_id())) {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
     private StoreCategory getCategoryOrException(UUID categoryId) {
         return storeCategoryRepository.findById(categoryId).orElseThrow(
                 () -> new TwotwoApplicationException(ErrorCode.NOT_FOUND)
@@ -161,7 +172,6 @@ public class StoreService {
                 () -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND)
         );
     }
-
 
 }
 

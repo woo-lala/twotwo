@@ -1,14 +1,13 @@
 package com.sparta.twotwo.store.service;
 
+import com.sparta.twotwo.auth.util.SecurityUtil;
+import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
-import com.sparta.twotwo.store.dto.request.AddressRequestDto;
-import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
-import com.sparta.twotwo.store.repository.AddressRepository;
 import com.sparta.twotwo.store.repository.StoreCategoryRepository;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import org.junit.jupiter.api.Assertions;
@@ -23,27 +22,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.*;
 
 import static java.lang.Boolean.TRUE;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class StoreServiceTest {
+
+    @Mock
+    private SecurityUtil securityUtil;
     @Mock
     private StoreRepository storeRepository;
     @Mock
     private StoreCategoryRepository storeCategoryRepository;
     @Mock
     private MemberRepository memberRepository;
-
-    @Mock
-    private AddressRepository addressRepository;
     @Mock
     private AddressService addressService;
 
@@ -55,11 +51,13 @@ public class StoreServiceTest {
     private Store storeB;
     private StoreCategory category;
     private Member member;
+    private Address address;
     @BeforeEach
     private void setUp() {
 
         Set<String> roles = new HashSet<>();
         roles.add("MASTER");
+        roles.add("OWNER");
         member = new Member("username", "nickname", "master@email.com", "password", roles, TRUE);
 
         category = StoreCategory.builder().name("category").build();
@@ -85,21 +83,25 @@ public class StoreServiceTest {
         stores.add(storeA);
         stores.add(storeB);
 
+        address = Address.builder()
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .build();
+
     }
 
     @Test
     @DisplayName("전체 가게 조회 성공")
     void getAllStores() {
-
-        //given
+        // given
         Pageable pageable = mock(Pageable.class);
         Page<Store> expectedPage = new PageImpl<>(stores, pageable, stores.size());
         when(storeRepository.findAll(pageable)).thenReturn(expectedPage);
 
-        //when
+        // when
         Page<Store> actualPage= storeService.getAllStores(pageable);
 
-        //then
+        // then
         Assertions.assertEquals(expectedPage, actualPage);
 
     }
@@ -107,64 +109,142 @@ public class StoreServiceTest {
     @Test
     @DisplayName("가게 상세 조회 성공")
     void getStoreDetails() {
-        //given
+        // given
         when(storeRepository.findById(storeA.getId())).thenReturn(Optional.of(storeA));
 
-        //when
-        Optional<Store> actualStore = storeService.getStoreDetails(storeA.getId());
+        // when
+        Store actualStore = storeService.getStoreDetails(storeA.getId());
 
-        //then
-        Assertions.assertEquals(Optional.of(storeA), actualStore);
+        // then
+        Assertions.assertEquals(storeA, actualStore);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 가게 상세 조회 예외 발생")
+    void getStoreDetailsIfStoreNotExists() {
+        // given
+        Store reqStore = Store.builder().build();
+        when(storeRepository.findById(reqStore.getId())).thenReturn(Optional.empty());
+
+        // when
+        TwotwoApplicationException exception = Assertions.assertThrows(TwotwoApplicationException.class, () -> {
+            storeService.getStoreDetails(reqStore.getId());
+        });
+
+        // then
+        Assertions.assertEquals(ErrorCode.STORE_NOT_FOUND, exception.getErrorCode());
     }
 
     @Test
     @DisplayName("카테고리별 가게 조회 성공")
     void getStoresByCategory() {
-
-        //given
+        // given
         Pageable pageable = mock(Pageable.class);
         Page<Store> expectedPage = new PageImpl<>(stores, pageable, stores.size());
         when(storeCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(storeRepository.findStoresByCategoryId(category.getId(), pageable)).thenReturn(expectedPage);
 
-        //when
+        // when
         Page<Store> actualPage= storeService.getStoresByCategory(category.getId(),pageable);
 
-        //then
+        // then
         Assertions.assertEquals(expectedPage, actualPage);
 
     }
 
     @Test
-    @DisplayName("중복된 이름인 가게 저장 실패")
-    void duplicatedNameStore() {
-
-        //given
-        Address reqAddress = Address.builder()
-                .roadAddress("roadAddress")
-                .detailAddress("detailAddress")
-                .build();
-
+    @DisplayName("중복된 이름인 가게 저장 예외 발생")
+    void saveDuplicatedNameStore() {
+        // given
         String duplicatedName = "storeA";
 
         Store reqStore = Store.builder()
                 .name(duplicatedName)
                 .category(category)
                 .member(member)
-                .address(reqAddress)
+                .address(address)
                 .build();
 
         when(memberRepository.findById(reqStore.getMember().getMember_id())).thenReturn(Optional.of(member));
-        when(addressService.saveAddress(reqStore.getAddress())).thenReturn(reqAddress);
+        when(addressService.saveAddress(reqStore.getAddress())).thenReturn(address);
         when(storeCategoryRepository.findById(reqStore.getCategory().getId())).thenReturn(Optional.of(category));
         when(storeRepository.findByName(reqStore.getName())).thenReturn(Optional.of(storeA));
 
         //when&then
-        assertThrows(TwotwoApplicationException.class, () -> {
+        Assertions.assertThrows(TwotwoApplicationException.class, () -> {
             storeService.saveStore(reqStore);
         });
     }
 
+    @Test
+    @DisplayName("관리자가 아니고 가게 주인이 아닐 때 Store 수정 시도 시 예외 발생")
+    void updateStoreWhenNotOwner() {
+        // given
+        UUID storeId = UUID.randomUUID();
+        Long ownerId = 1L;
+        Long modifierId = 2L;
+        Set<String> newRoles = new HashSet<>();
+        newRoles.add("OWNER");
+        newRoles.add("CUSTOMER");
 
+        Member modifier = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        modifier.setMember_id(modifierId);
+
+        Member owner = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        owner.setMember_id(ownerId);
+
+        Store reqStore = Store.builder()
+                .member(modifier)
+                .name("newName")
+                .build();
+
+        Store store = Store.builder()
+                .name("store")
+                .member(owner)
+                .build();
+
+        when(securityUtil.getMemberId()).thenReturn(modifierId);
+        when(memberRepository.findById(modifierId)).thenReturn(Optional.of(modifier));
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+
+        // when&then
+        TwotwoApplicationException exception = Assertions.assertThrows(TwotwoApplicationException.class, () -> {
+            storeService.updateStore(storeId, reqStore);
+        });
+        Assertions.assertEquals(ErrorCode.UNAUTHORIZED, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("관리자가 아니고 가게 주인이 아닐 때 Store 삭제 시도 시 예외 발생")
+    void deleteStoreWhenNotOwner() {
+        // given
+        UUID storeId = UUID.randomUUID();
+        Long ownerId = 1L;
+        Long deleterId = 2L;
+        Set<String> newRoles = new HashSet<>();
+        newRoles.add("OWNER");
+        newRoles.add("CUSTOMER");
+
+        Member modifier = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        modifier.setMember_id(deleterId);
+
+        Member owner = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        owner.setMember_id(ownerId);
+
+        Store store = Store.builder()
+                .name("store")
+                .member(owner)
+                .build();
+
+        when(securityUtil.getMemberId()).thenReturn(deleterId);
+        when(memberRepository.findById(deleterId)).thenReturn(Optional.of(modifier));
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+
+        // when&then
+        TwotwoApplicationException exception = Assertions.assertThrows(TwotwoApplicationException.class, () -> {
+            storeService.deleteStore(storeId);
+        });
+        Assertions.assertEquals(ErrorCode.UNAUTHORIZED, exception.getErrorCode());
+    }
 
 }
