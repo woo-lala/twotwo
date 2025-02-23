@@ -36,7 +36,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public ReviewResponseDto createReview(CreateReviewRequestDto requestDto) {
+    public Review createReview(CreateReviewRequestDto requestDto) {
         Member member = findMember(authenticateMember());
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
@@ -45,9 +45,7 @@ public class ReviewService {
             throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
         }
 
-        Review review = reviewRepository.save(new Review(requestDto, member, order));
-
-        return new ReviewResponseDto(review);
+        return reviewRepository.save(new Review(requestDto, member, order));
     }
 
     public Page<ReviewResponseDto> getReviews(SearchReviewRequestDto requestDto, int page, int size, String sortBy, boolean isAsc) {
@@ -57,32 +55,32 @@ public class ReviewService {
         return reviewRepository.searchReviews(requestDto, pageable, hasManagerOrMasterRole(member.getRoles()));
     }
 
-    public ReviewResponseDto getReview(UUID reviewId) {
+    public Review getReview(UUID reviewId) {
         Member member = findMember(authenticateMember());
         Review review = findReview(reviewId);
 
         validateReviewAvailability(review);
 
         if (hasManagerOrMasterRole(member.getRoles())){
-            return new ReviewResponseDto(review);
+            return review;
         }
 
         if (review.getIsHidden()) {
             validateMemberAuthentication(review);
         }
 
-        return new ReviewResponseDto(review);
+        return review;
     }
 
     @Transactional
-    public ReviewResponseDto updateReview(UUID reviewId, UpdateReviewRequestDto requestDto) {
+    public Review updateReview(UUID reviewId, UpdateReviewRequestDto requestDto) {
         Review review = findReview(reviewId);
         validateMemberAuthentication(review);
 
         updateReviewFields(review, requestDto);
         review.update(review);
 
-        return new ReviewResponseDto(review);
+        return review;
     }
 
     @Transactional
