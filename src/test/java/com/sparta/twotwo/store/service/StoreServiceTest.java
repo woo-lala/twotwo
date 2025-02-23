@@ -26,8 +26,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static java.lang.Boolean.TRUE;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StoreServiceTest {
@@ -225,8 +224,8 @@ public class StoreServiceTest {
         newRoles.add("OWNER");
         newRoles.add("CUSTOMER");
 
-        Member modifier = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
-        modifier.setMember_id(deleterId);
+        Member deleter = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        deleter.setMember_id(deleterId);
 
         Member owner = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
         owner.setMember_id(ownerId);
@@ -237,7 +236,7 @@ public class StoreServiceTest {
                 .build();
 
         when(securityUtil.getMemberId()).thenReturn(deleterId);
-        when(memberRepository.findById(deleterId)).thenReturn(Optional.of(modifier));
+        when(memberRepository.findById(deleterId)).thenReturn(Optional.of(deleter));
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
 
         // when&then
@@ -245,6 +244,41 @@ public class StoreServiceTest {
             storeService.deleteStore(storeId);
         });
         Assertions.assertEquals(ErrorCode.UNAUTHORIZED, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("Store 삭제 성공")
+    void deleteStore() {
+        // given
+        UUID storeId = UUID.randomUUID();
+        Long ownerId = 1L;
+        Long deleterId = 1L;
+        Set<String> newRoles = new HashSet<>();
+        newRoles.add("MANAGER");
+        newRoles.add("OWNER");
+
+        Member deleter = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        deleter.setMember_id(deleterId);
+
+        Member owner = new Member("username", "nickname", "owner@email.com", "password", newRoles, TRUE);
+        owner.setMember_id(ownerId);
+
+        Store store = Store.builder()
+                .name("store")
+                .member(owner)
+                .build();
+        store.setIsDeleted(false);
+
+        when(securityUtil.getMemberId()).thenReturn(deleterId);
+        when(memberRepository.findById(deleterId)).thenReturn(Optional.of(deleter));
+        when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+        when(storeRepository.saveAndFlush(store)).thenReturn(store);
+
+        // when
+        storeService.deleteStore(storeId);
+        // then
+        Assertions.assertTrue(store.getIsDeleted());
+        verify(storeRepository, times(1)).saveAndFlush(store);
     }
 
 }
