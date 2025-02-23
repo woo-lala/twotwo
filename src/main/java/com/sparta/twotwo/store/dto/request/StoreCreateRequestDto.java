@@ -20,7 +20,7 @@ public class StoreCreateRequestDto {
     private final Long memberId;
 
     @Valid
-    private final AddressRequest address;
+    private final AddressRequestDto address;
 
     @NotNull(message = "카테고리를 선택해주세요.")
     private final UUID categoryId;
@@ -36,7 +36,7 @@ public class StoreCreateRequestDto {
     private final LocalTime operationClosedAt;
 
     @Builder
-    public StoreCreateRequestDto(String name, Long memberId, AddressRequest address, UUID categoryId, String imageUrl, Long minOrderPrice, LocalTime operationStartedAt, LocalTime operationClosedAt) {
+    public StoreCreateRequestDto(String name, Long memberId, AddressRequestDto address, UUID categoryId, String imageUrl, Long minOrderPrice, LocalTime operationStartedAt, LocalTime operationClosedAt) {
         this.name = name;
         this.memberId = memberId;
         this.address = address;

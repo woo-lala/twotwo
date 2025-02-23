@@ -13,10 +13,12 @@ public enum ErrorCode {
     PRODUCT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
     ORDER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "요청의 구문이 잘못되었습니다."),
+    NO_ADDRESS_CHANGES(HttpStatus.BAD_REQUEST, "변경된 주소 정보가 없습니다."),
 
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "지정한 리소스에 대한 액세스 권한이 없습니다."),
     PAYMENT_REQUIRED(HttpStatus.PAYMENT_REQUIRED, "지정한 리소스를 액세스하기 위해서는 결제가 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "지정한 리소스에 대한 액세스가 금지되었습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
@@ -28,6 +30,8 @@ public enum ErrorCode {
     MEMBER_EMAIL_EXIST(HttpStatus.CONFLICT, "중복된 이메일 입니다."),
     MEMBER_USERNAME_EXIST(HttpStatus.CONFLICT, "중복된 아이디 입니다."),
     STORE_NAME_EXIST(HttpStatus.CONFLICT, "중복된 가게명 입니다."),
+    ADDRESS_EXIST(HttpStatus.CONFLICT, "중복된 주소 입니다."),
+
     CONFLICT(HttpStatus.CONFLICT, "서버가 요청을 수행하는 중에 충돌이 발생하였습니다."),
 
     TIMEOUT_UPDATE_ORDER(HttpStatus.REQUEST_TIMEOUT, "주문 수정 가능 시간이 초과했습니다."),

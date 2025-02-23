@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-
 @Getter
 @RequiredArgsConstructor
-public class AddressRequest {
+public class AreaRequestDto {
 
     @NotBlank(message = "시도를 작성해주세요.")
     private final String sido;
@@ -24,11 +23,4 @@ public class AddressRequest {
 
     @NotNull(message = "우편번호를 작성해주세요.")
     private final String zipNum;
-
-    @NotNull(message = "도로명주소를 작성해주세요.")
-    private final String roadAddress;
-
-    @NotNull(message = "상세주소를 작성해주세요.")
-    private final String detailAddress;
-
 }

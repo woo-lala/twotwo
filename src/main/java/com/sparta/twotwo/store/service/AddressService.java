@@ -2,10 +2,9 @@ package com.sparta.twotwo.store.service;
 
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
-import com.sparta.twotwo.store.dto.request.AddressRequest;
-import com.sparta.twotwo.store.dto.request.AddressUpdateRequest;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Area;
+import com.sparta.twotwo.store.entity.StoreCategory;
 import com.sparta.twotwo.store.repository.AddressRepository;
 import com.sparta.twotwo.store.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,69 +21,61 @@ public class AddressService {
     private final AddressRepository addressRepository;
 
     @Transactional
-    public Address saveAddress(AddressRequest request) {
+    public Address saveAddress(Address reqAddress) {
 
-        //Area 있으면 가져오고 없으면 새로 생성
-        Area area = getArea(request.getZipNum()).orElseGet(
-                () -> Area.builder()
-                        .zipNum(request.getZipNum())
-                        .emd(request.getEmd())
-                        .sido(request.getSido())
-                        .sigg(request.getSigg())
-                        .emd(request.getEmd())
-                        .admCode(request.getAdmCode())
-                        .build()
-        );
+        Area area = getOrCreateArea(reqAddress.getArea());
 
-        areaRepository.save(area);
+        Optional<Address> existingAddress = addressRepository.findByAreaIdAndRoadAddressAndDetailAddress(
+                area.getId(),
+                reqAddress.getRoadAddress(),
+                reqAddress.getDetailAddress());
 
-        //주소 생성
+        if (existingAddress.isPresent()) {
+            throw new TwotwoApplicationException(ErrorCode.ADDRESS_EXIST);
+        }
+
         Address newAddress = Address.builder()
-                .roadAddress(request.getRoadAddress())
-                .detailAddress(request.getDetailAddress())
                 .area(area)
+                .roadAddress(reqAddress.getRoadAddress())
+                .detailAddress(reqAddress.getDetailAddress())
                 .build();
 
-        final Address resultAddress = addressRepository.save(newAddress);
-        return resultAddress;
+        return addressRepository.save(newAddress);
     }
 
     @Transactional
-    public Address updateAddress(AddressUpdateRequest request) {
+    public Address updateAddress(Address existingAddress, Address reqAddress) {
 
-        //Area 있으면 가져오고 없으면 새로 생성
-        Area area = getArea(request.getZipNum()).orElseGet(
-                () -> Area.builder()
-                        .zipNum(request.getZipNum())
-                        .emd(request.getEmd())
-                        .sido(request.getSido())
-                        .sigg(request.getSigg())
-                        .emd(request.getEmd())
-                        .admCode(request.getAdmCode())
-                        .build()
-        );
+        Area area = (reqAddress.getArea() != null) ? getOrCreateArea(reqAddress.getArea()) : existingAddress.getArea();
 
-        areaRepository.save(area);
+        if (area.equals(existingAddress.getArea()) &&
+                reqAddress.getRoadAddress().equals(existingAddress.getRoadAddress()) &&
+                reqAddress.getDetailAddress().equals(existingAddress.getDetailAddress())) {
+            throw new TwotwoApplicationException(ErrorCode.NO_ADDRESS_CHANGES);
+        }
 
-        //없으면 주소 생성
-        Address address = getAddress(area, request.getRoadAddress(), request.getDetailAddress()).orElseGet(() ->
-                Address.builder()
-                        .roadAddress(request.getRoadAddress())
-                        .detailAddress(request.getDetailAddress())
-                        .area(area)
-                        .build()
-        );
+        existingAddress.updateArea(area);
+        Optional.ofNullable(reqAddress.getRoadAddress()).ifPresent(existingAddress::updateRoadAddress);
+        Optional.ofNullable(reqAddress.getDetailAddress()).ifPresent(existingAddress::updateDetailAddress);
 
-        final Address resultAddress = addressRepository.save(address);
-        return resultAddress;
+
+        return addressRepository.save(existingAddress);
     }
 
-    public Optional<Address> getAddress(Area area, String roadAddress, String detailAddress) {
-        return addressRepository.findByAreaIdAndRoadAddressAndDetailAddress(area.getId(), roadAddress, detailAddress);
-    }
-
-    private Optional<Area> getArea(String zipNum) {
-        return areaRepository.findAreaByZipNum(zipNum);
+    @Transactional
+    public Area getOrCreateArea(Area reqArea) {
+        return areaRepository.findAreaByZipNum(reqArea.getZipNum()).orElseGet(
+                () -> areaRepository.save(
+                        Area.builder()
+                                .zipNum(reqArea.getZipNum())
+                                .emd(reqArea.getEmd())
+                                .sido(reqArea.getSido())
+                                .sigg(reqArea.getSigg())
+                                .emd(reqArea.getEmd())
+                                .admCode(reqArea.getAdmCode())
+                                .build()
+                )
+        );
     }
 
 }

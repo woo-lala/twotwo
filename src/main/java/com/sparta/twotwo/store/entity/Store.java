@@ -6,6 +6,7 @@ import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "p_store")
+@Where(clause = "is_deleted = false")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseEntity {
 
