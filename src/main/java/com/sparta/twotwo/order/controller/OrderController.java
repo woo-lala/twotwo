@@ -52,7 +52,7 @@ public class OrderController {
 
         Page<Order> orders = orderService.getOrders(page - 1, size, sortBy, isAsc, searchRequestDto);
 
-        Page<OrderResponseDto> response = orders.map(Order::toResponseDto);
+        Page<OrderResponseDto> response = orders.map(Order::toOrderResponseDto);
 
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
 

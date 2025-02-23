@@ -34,11 +34,11 @@ public class OrderProduct extends BaseEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID orderProductId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     private Product product;
 

@@ -47,11 +47,11 @@ public class Order extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Long price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
 
@@ -92,19 +92,18 @@ public class Order extends BaseEntity {
                 .build();
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "order_id=" + order_id +
-                ", order_type=" + order_type +
-                ", price=" + price +
-                ", member=" + member +
-                ", store=" + store +
-                ", orderProducts=" + orderProducts +
-                ", deleteby=" + getDeletedBy() +
-                ", deleteat=" + getDeletedAt() +
-                '}';
+    public OrderResponseDto toOrderResponseDto() {
+        return OrderResponseDto.builder()
+                .orderId(order_id)
+                .orderType(order_type)
+                .price(price)
+                .memberId(member.getMember_id())
+                .storeId(store.getId())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
     }
+
 
 
 }
