@@ -61,13 +61,13 @@ public class Store extends BaseEntity {
     private LocalTime operationClosedAt;
 
     @Column(name = "rating", precision = 2, scale = 1)
-    private BigDecimal rating;
+    private BigDecimal rating = BigDecimal.valueOf(0.0);
 
     @Column(name = "review_cnt")
-    private Integer reviewCount;
+    private Integer reviewCount = 0;
 
     @Builder
-    public Store(Member member, Address address, String name, Long minOrderPrice, LocalTime operationClosedAt, LocalTime operationStartedAt, StoreCategory category, BigDecimal rating, Integer reviewCount, String imageUrl) {
+    public Store(Member member, Address address, String name, Long minOrderPrice, LocalTime operationClosedAt, LocalTime operationStartedAt, StoreCategory category, String imageUrl) {
         this.address = address;
         this.minOrderPrice = minOrderPrice;
         this.member = member;
@@ -76,8 +76,6 @@ public class Store extends BaseEntity {
         this.operationStartedAt = operationStartedAt;
         this.name = name;
         this.imageUrl = imageUrl;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
     }
 
     public void updateName(String name) {
