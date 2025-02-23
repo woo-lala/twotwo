@@ -64,21 +64,14 @@ public class OrderController {
     @PostMapping("/orders/{store_id}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
             @PathVariable("store_id") String store_id,
-//            @AuthenticationPrincipal MemberDetails memberDetails,
             @RequestBody OrderRequestDto orderRequestDto
-//            @RequestBody List<OrderProductRequestDto> orderProductRequestDtoList
     ){
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        MemberDetails memberDetails = (MemberDetails)authentication.getPrincipal();
-
-        Long memberId = SecurityUtil.getMemberIdFromSecurityContext();
-        Member member = memberRepository.findById(memberId).orElseThrow();
 
         log.info("requestDto: {}", orderRequestDto);
 
-        UUID store = UUID.fromString(store_id);
-        OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, member, store);
+        UUID storeId = UUID.fromString(store_id);
+        OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, storeId);
 
         return new ResponseEntity<>(ApiResponse.success(orderResponseDto), HttpStatus.OK);
     }

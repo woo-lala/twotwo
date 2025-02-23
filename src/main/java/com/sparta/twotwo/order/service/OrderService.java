@@ -3,9 +3,7 @@ package com.sparta.twotwo.order.service;
 import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
-import com.sparta.twotwo.common.response.ApiResponse;
 import com.sparta.twotwo.members.entity.Member;
-import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
@@ -18,7 +16,6 @@ import com.sparta.twotwo.order.repository.OrderRepository;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
 import com.sparta.twotwo.store.entity.Store;
-
 import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +23,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -46,13 +40,15 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
 
 
-    public OrderResponseDto saveOrder(OrderRequestDto orderRequestDto, Member member, UUID storeId) {
+    public OrderResponseDto saveOrder(OrderRequestDto orderRequestDto, UUID storeId) {
         log.info("orderRequestDto: {}", orderRequestDto);
-        log.info("member: {}", member);
         log.info("storeId: {}", storeId);
 
+        Long memberId = SecurityUtil.getMemberIdFromSecurityContext();
+        Member member = memberRepository.findById(memberId).orElseThrow();
 
         Store findStore = storeRepository.findById(storeId)
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.STORE_NOT_FOUND));
