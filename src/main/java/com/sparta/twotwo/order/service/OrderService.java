@@ -10,6 +10,7 @@ import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
+import com.sparta.twotwo.order.dto.SearchRequestDto;
 import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.entity.OrderProduct;
 import com.sparta.twotwo.order.repository.OrderProductRepository;
@@ -84,19 +85,13 @@ public class OrderService {
     }
 
 
-    public Page<Order> getOrders(int page, int size, String sortBy, boolean isAsc, Member member) {
+    public Page<Order> getOrders(int page, int size, String sortBy, boolean isAsc, SearchRequestDto searchRequestDto) {
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Set<String> roles = member.getRoles();
-
-        if(!roles.contains(RolesEnum.MANAGER.getAuthority()) && !roles.contains(RolesEnum.MASTER.getAuthority())){
-            //TODO 권한 에러 추가
-            throw new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND);
-        }
-
-        Page<Order> orders = orderRepository.findAll(pageable);
+//        Page<Order> orders = orderRepository.findAll(pageable);
+        Page<Order> orders = orderRepository.searchOrders(searchRequestDto, pageable);
 
         List<Order> orderList = orders.getContent();
 

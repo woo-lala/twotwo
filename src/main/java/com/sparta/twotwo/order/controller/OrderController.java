@@ -9,6 +9,7 @@ import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
+import com.sparta.twotwo.order.dto.SearchRequestDto;
 import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +45,12 @@ public class OrderController {
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam("sortBy") String sortBy,
-            @RequestParam("isAsc") boolean isAsc
-//            @AuthenticationPrincipal Member member
+            @RequestParam("isAsc") boolean isAsc,
+            @ModelAttribute SearchRequestDto searchRequestDto
     ) {
+        log.info("searchRequestDto: {}", searchRequestDto);
 
-        Long memberId = SecurityUtil.getMemberIdFromSecurityContext();
-        Member member = memberRepository.findById(memberId).orElseThrow();
-
-        Page<Order> orders = orderService.getOrders(page - 1, size, sortBy, isAsc, member);
+        Page<Order> orders = orderService.getOrders(page - 1, size, sortBy, isAsc, searchRequestDto);
 
         Page<OrderResponseDto> response = orders.map(Order::toResponseDto);
 
