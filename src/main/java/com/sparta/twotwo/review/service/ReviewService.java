@@ -38,9 +38,12 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto createReview(CreateReviewRequestDto requestDto) {
         Member member = findMember(authenticateMember());
-        // 사용자의 주문인지 확인하는 로직 구현 필요
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!Objects.equals(member.getMember_id(), order.getMember().getMember_id())) {
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
 
         Review review = reviewRepository.save(new Review(requestDto, member, order));
 
