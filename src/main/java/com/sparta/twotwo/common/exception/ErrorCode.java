@@ -34,6 +34,7 @@ public enum ErrorCode {
 
     CONFLICT(HttpStatus.CONFLICT, "서버가 요청을 수행하는 중에 충돌이 발생하였습니다."),
 
+    TIMEOUT_UPDATE_ORDER(HttpStatus.REQUEST_TIMEOUT, "주문 수정 가능 시간이 초과했습니다."),
 
     //5XX
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 에러가 발생하였습니다."),

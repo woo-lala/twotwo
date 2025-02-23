@@ -53,18 +53,32 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("OWNER", "MANAGER")
                     .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
                     .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
+//                    .requestMatchers("/api/products").permitAll()
 
-                    //orders
+                    // stores
                     .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER", "OWNER")
                     .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("MASTER", "MANAGER", "OWNER")
 
+                    //orders
+                    .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+
                     //categories
+                    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("MASTER", "MANAGER")
 
                     //review
                     .requestMatchers(HttpMethod.POST, "/api/reviews").hasAnyRole("MASTER", "MANAGER", "CUSTOMER")
+                    .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("MASTER")
+
+                    //swagger
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/swagger-resources/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated();
         })
                 .formLogin(AbstractHttpConfigurer::disable)

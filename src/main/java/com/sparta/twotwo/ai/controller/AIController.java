@@ -21,11 +21,11 @@ public class AIController {
     private final ProductRepository productRepository;
 
     @PostMapping("/generate/{productId}")
-    public ResponseEntity<ApiResponse<AIRequestLogResponseDto>> generateDescription(@PathVariable UUID productId, @RequestBody String prompt) {
+    public ResponseEntity<ApiResponse<AIRequestLogResponseDto>> generateDescription(@PathVariable UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
 
-        AIRequestLog aiRequestLog = aiService.generateProductDescription(product, prompt);
+        AIRequestLog aiRequestLog = aiService.generateProductDescription(product);
 
         AIRequestLogResponseDto responseDto = AIRequestLogResponseDto.builder()
                 .id(aiRequestLog.getId())

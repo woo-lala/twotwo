@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,20 +21,28 @@ public class AIService {
     private final GeminiConfig geminiConfig;
     private final AIRequestLogRepository aiRequestLogRepository;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper;
 
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
     @Transactional
-    public AIRequestLog generateProductDescription(Product product, String prompt) {
+    public AIRequestLog generateProductDescription(Product product) {
         AIRequestLog aiRequestLog = new AIRequestLog();
         aiRequestLog.setProduct(product);
-        aiRequestLog.setRequestText(prompt);
+//        aiRequestLog.setRequestText(prompt);
+//        aiRequestLog.setStatus(AIRequestStatus.PENDING);
+
+        // 요청 프롬포트 생성
+        String finalPrompt = String.format(
+                "상품명: %s. 이 상품을 간결하게 설명해줘 (50자 이하).",
+                product.getProductName()
+        );
+
+        aiRequestLog.setRequestText(finalPrompt);
         aiRequestLog.setStatus(AIRequestStatus.PENDING);
-        aiRequestLog = aiRequestLogRepository.save(aiRequestLog); // 로그 먼저 저장
 
         try {
-            String response = callAIAPI(prompt);
+            // 요청한 프롬포트 전달
+            String response = callAIAPI(finalPrompt);
 
             if (response == null || response.isEmpty()) {
                 aiRequestLog.setStatus(AIRequestStatus.FAILED);
@@ -63,47 +68,31 @@ public class AIService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + API_KEY);
+//        headers.set("Authorization", "Bearer " + API_KEY);
 
-        // 요청 본문을 Map으로 생성 후 JSON 변환
-        Map<String, Object> requestBody = Map.of(
-                "contents", List.of(
-                        Map.of("parts", List.of(
-                                Map.of("text", prompt + " 답변을 최대한 간결하게 50자 이하로")
-                        ))
-                )
+        String requestBody = String.format(
+                "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
+                prompt
+        );
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                API_URL + "?key=" + API_KEY,  // API 키를 URL 파라미터로 전달해야됨
+                HttpMethod.POST,
+                requestEntity,
+                String.class
         );
 
         try {
-            String jsonRequestBody = objectMapper.writeValueAsString(requestBody);
-            HttpEntity<String> requestEntity = new HttpEntity<>(jsonRequestBody, headers);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(response.getBody());
 
-            ResponseEntity<String> response = restTemplate.exchange(
-                    API_URL,
-                    HttpMethod.POST,
-                    requestEntity,
-                    String.class
-            );
-
-            return parseAIResponse(response.getBody());
-        } catch (Exception e) {
-            log.error("AI API 요청 실패", e);
-            return "AI 응답을 처리하는 중 오류 발생";
-        }
-    }
-
-    private String parseAIResponse(String responseBody) {
-        try {
-            JsonNode root = objectMapper.readTree(responseBody);
-
-            if (root.hasNonNull("candidates") && root.get("candidates").isArray() && root.get("candidates").size() > 0) {
+            if (root.has("candidates") && root.get("candidates").size() > 0) {
                 JsonNode candidate = root.get("candidates").get(0);
-                if (candidate.hasNonNull("content") && candidate.get("content").hasNonNull("parts") &&
-                        candidate.get("content").get("parts").isArray() && candidate.get("content").get("parts").size() > 0) {
+                if (candidate.has("content") && candidate.get("content").has("parts") && candidate.get("content").get("parts").size() > 0) {
                     return candidate.get("content").get("parts").get(0).path("text").asText("AI 응답 없음");
                 }
             }
-
             return "AI 응답이 올바르지 않습니다.";
         } catch (Exception e) {
             log.error("AI 응답 파싱 오류", e);

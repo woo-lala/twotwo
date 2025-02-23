@@ -24,5 +24,4 @@ public class ProductRequestDto {
 
     private String imageUrl;
 
-    private Boolean isHidden;
 }

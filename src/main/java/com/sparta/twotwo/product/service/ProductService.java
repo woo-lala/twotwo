@@ -1,7 +1,6 @@
 package com.sparta.twotwo.product.service;
 
 import com.sparta.twotwo.ai.entity.AIRequestLog;
-import com.sparta.twotwo.ai.repository.AIRequestLogRepository;
 import com.sparta.twotwo.ai.service.AIService;
 import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.enums.AIRequestStatus;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,34 +46,23 @@ public class ProductService {
             throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
         }
 
-        // AI 설명 없이 먼저 저장
         Product product = new Product();
         product.setStore(store);
         product.setProductName(requestDto.getProductName());
         product.setPrice(requestDto.getPrice());
         product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.getIsHidden() != null ? requestDto.getIsHidden() : false);
         product.setCreatedBy(createdBy);
-
-        if (requestDto.getDescription() != null && !requestDto.getDescription().trim().isEmpty()) {
-            product.setDescription(requestDto.getDescription());
-        } else {
-            CompletableFuture.runAsync(() -> {
-                AIRequestLog aiRequestLog = aiService.generateProductDescription(product,
-                        String.format("%s 설명을 생성해줘", product.getProductName()));
-
-                if (aiRequestLog != null) {
-                    product.setDescriptionLog(aiRequestLog);
-                    product.setDescription(aiRequestLog.getResponseText());
-                    productRepository.save(product);
-                } else {
-                    product.setDescription("설명이 준비되지 않았습니다.");
-                    productRepository.save(product);
-                }
-            });
-        }
+        product.setCreatedAt(LocalDateTime.now());
 
         Product savedProduct = productRepository.save(product);
+
+        AIRequestLog aiRequestLog = aiService.generateProductDescription(savedProduct);
+
+        if (aiRequestLog != null && aiRequestLog.getStatus() == AIRequestStatus.SUCCESS) {
+            savedProduct.setDescriptionLog(aiRequestLog);
+            savedProduct.setDescription(aiRequestLog.getResponseText());
+            savedProduct = productRepository.save(savedProduct);
+        }
 
         return ProductResponseDto.builder()
                 .productId(savedProduct.getId())
@@ -84,18 +71,24 @@ public class ProductService {
                 .productName(savedProduct.getProductName())
                 .price(savedProduct.getPrice())
                 .imageUrl(savedProduct.getImageUrl())
-                .isHidden(savedProduct.getIsHidden())
                 .createdAt(savedProduct.getCreatedAt().format(FORMATTER))
                 .createdBy(savedProduct.getCreatedBy())
                 .build();
     }
+
 
     @Transactional(readOnly = true)
     public List<ProductListResponseDto> getProductsByStoreId(UUID storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다: " + storeId));
 
-        return productRepository.findByStore(store).stream()
+        List<Product> products = productRepository.findByStoreAndIsDeletedFalse(store);
+
+        if (products.isEmpty()) {
+            throw new IllegalArgumentException("해당 가게에 등록된 상품이 없습니다.");
+        }
+
+        return products.stream()
                 .map(product -> ProductListResponseDto.builder()
                         .productId(product.getId())
                         .descriptionId(product.getDescriptionLog() != null ? product.getDescriptionLog().getId() : null)
@@ -103,7 +96,6 @@ public class ProductService {
                         .productName(product.getProductName())
                         .price(product.getPrice())
                         .imageUrl(product.getImageUrl())
-                        .isHidden(product.getIsHidden())
                         .createdAt(product.getCreatedAt().format(FORMATTER))
                         .build())
                 .collect(Collectors.toList());
@@ -111,8 +103,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId));
+        Product product = productRepository.findByIdAndIsDeletedFalse(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. 삭제되었거나 존재하지 않는 상품입니다: " + productId));
 
         return ProductResponseDto.builder()
                 .productId(product.getId())
@@ -122,7 +114,6 @@ public class ProductService {
                 .productName(product.getProductName())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
-                .isHidden(product.getIsHidden())
                 .createdAt(product.getCreatedAt().format(FORMATTER))
                 .createdBy(product.getCreatedBy())
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().format(FORMATTER) : null)
@@ -138,32 +129,31 @@ public class ProductService {
 
         Long updatedBy = authenticateMember();
 
-        if (requestDto.getPrice() < 0) {
-            throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+        if (requestDto.getProductName() != null) {
+            product.setProductName(requestDto.getProductName());
         }
 
-        // 기본 정보 수정
-        product.setProductName(requestDto.getProductName());
-        product.setPrice(requestDto.getPrice());
-        product.setImageUrl(requestDto.getImageUrl());
-        product.setIsHidden(requestDto.isHidden());
+        if (requestDto.getPrice() != null) {
+            if (requestDto.getPrice() < 0) {
+                throw new IllegalArgumentException("상품 가격은 0 이상이어야 합니다.");
+            }
+            product.setPrice(requestDto.getPrice());
+        }
+
+        if (requestDto.getImageUrl() != null) {
+            product.setImageUrl(requestDto.getImageUrl());
+            // 요청에서 description이 포함됨 -> 사용자가 입력한 값으로 덮어씀
+            // 포함X -> 기존 설명 유지
+        }
+
+        if (requestDto.getDescription() != null) {
+            product.setDescription(requestDto.getDescription());
+        }
+
         product.setUpdatedBy(updatedBy);
         product.setUpdatedAt(LocalDateTime.now());
 
-        if (requestDto.getDescription() == null || requestDto.getDescription().isBlank()) {
-            AIRequestLog aiRequestLog = aiService.generateProductDescription(product, "이 상품의 설명을 생성해줘");
-            if (aiRequestLog.getStatus() == AIRequestStatus.SUCCESS) {
-                product.setDescriptionLog(aiRequestLog);
-                product.setDescription(aiRequestLog.getResponseText());
-            } else {
-                product.setDescription("상품 설명이 생성되지 않았습니다.");
-            }
-        }
-
-        product = productRepository.save(product);
-
         return ProductUpdateResponseDto.builder()
-                .message("상품이 성공적으로 수정되었습니다.")
                 .productId(product.getId())
                 .updatedAt(product.getUpdatedAt().format(FORMATTER))
                 .updatedBy(updatedBy)
@@ -180,9 +170,9 @@ public class ProductService {
         product.setDeletedBy(deletedBy);
         product.setDeletedAt(LocalDateTime.now());
         product.setIsDeleted(true);
+        product.setIsHidden(true);
 
         return ProductDeleteResponseDto.builder()
-                .message("상품이 성공적으로 삭제되었습니다.")
                 .productId(product.getId())
                 .deletedAt(product.getDeletedAt().format(FORMATTER))
                 .deletedBy(deletedBy)
