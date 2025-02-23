@@ -42,9 +42,7 @@ public class StoreService {
     }
 
     public Store getStoreDetails(UUID storeId) {
-
         return getStoreOrException(storeId);
-
     }
 
     public Page<Store> getStoresByCategory(UUID categoryId, Pageable pageable) {
@@ -135,11 +133,11 @@ public class StoreService {
         store.setIsDeleted(Boolean.TRUE);
 
         List<Product> products = store.getProducts();
-
-        for (Product product : products) {
-            productService.deleteProduct(product.getId());
+        if (products != null) {
+            for (Product product : products) {
+                productService.deleteProduct(product.getId());
+            }
         }
-
         return storeRepository.saveAndFlush(store);
     }
 

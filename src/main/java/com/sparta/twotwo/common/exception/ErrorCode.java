@@ -18,6 +18,7 @@ public enum ErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "지정한 리소스에 대한 액세스 권한이 없습니다."),
     PAYMENT_REQUIRED(HttpStatus.PAYMENT_REQUIRED, "지정한 리소스를 액세스하기 위해서는 결제가 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "지정한 리소스에 대한 액세스가 금지되었습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
