@@ -1,5 +1,7 @@
 package com.sparta.twotwo.store.service;
 
+import com.sparta.twotwo.common.exception.ErrorCode;
+import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Area;
 import com.sparta.twotwo.store.repository.AddressRepository;
@@ -60,7 +62,7 @@ public class AddressServiceTest {
 
 
     @Test
-    @DisplayName("Address 주소 생성 성공")
+    @DisplayName("Address 생성 성공")
     void saveAddress() {
         // given
         Address reqAddress = Address.builder()
@@ -68,19 +70,51 @@ public class AddressServiceTest {
                 .roadAddress("reqRoadAddress")
                 .detailAddress("reqDetailAddress")
                 .build();
-
-        // when
         when(areaRepository.findAreaByZipNum(reqArea.getZipNum())).thenReturn(Optional.ofNullable(area));
         when(addressRepository.save(any(Address.class))).thenReturn(address);
+
+        // when
         Address actualAddress = addressService.saveAddress(reqAddress);
 
         // then
         Assertions.assertEquals(address, actualAddress);
     }
 
+    @Test
+    @DisplayName("중복된 Address 저장 예외 발생")
+    void saveDuplicatedAddress() {
+        // given
+        Area sameReqArea = Area.builder()
+                .sido("sido")
+                .sigg("sigg")
+                .emd("emd")
+                .admCode("admcode")
+                .zipNum("zipNum")
+                .build();
+
+        Address sameReqAddress = Address.builder()
+                .area(sameReqArea)
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .build();
+        when(areaRepository.findAreaByZipNum(address.getArea().getZipNum())).thenReturn(Optional.ofNullable(area));
+        when(addressRepository.findByAreaIdAndRoadAddressAndDetailAddress(area.getId(),
+                        sameReqAddress.getRoadAddress(),
+                        sameReqAddress.getDetailAddress()
+                )
+        ).thenReturn(Optional.ofNullable(address));
+
+        // when&then
+        TwotwoApplicationException exception = Assertions.assertThrows(TwotwoApplicationException.class, () ->
+                addressService.saveAddress(sameReqAddress)
+        );
+
+        Assertions.assertEquals(ErrorCode.ADDRESS_EXIST, exception.getErrorCode());
+    }
+
 
     @Test
-    @DisplayName("Area 존재할 때 주소 저장 성공")
+    @DisplayName("Area 존재할 때 Address 저장 성공")
     void saveAddressIfAreaExists() {
         // given
         Address reqAddress = Address.builder()
@@ -102,7 +136,7 @@ public class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("Area 없을 때 주소 저장 성공")
+    @DisplayName("Area 없을 때 Address 저장 성공")
     void saveAddressIfAreaDoesNotExist() {
         // given
         Address reqAddress = Address.builder()
@@ -122,5 +156,68 @@ public class AddressServiceTest {
         Assertions.assertEquals(address, actualAddress);
         verify(areaRepository, times(1)).save(any(Area.class));
     }
+
+    @Test
+    @DisplayName("Area 없으면 Area 수정되지 않고 Address 수정 성공")
+    void updateAddressIfAreaDoesNotExist() {
+        // given
+        Address reqAddress = Address.builder()
+                .roadAddress("reqRoadAddress")
+                .detailAddress("reqDetailAddress")
+                .build();
+
+        when(addressRepository.save(any(Address.class))).thenReturn(address);
+
+        // when
+        Address actualAddress = addressService.updateAddress(address, reqAddress);
+
+        // then
+        Assertions.assertEquals(address.getArea(), actualAddress.getArea());
+        verify(areaRepository, never()).save(any(Area.class));
+
+    }
+
+    @Test
+    @DisplayName("기존 Address과 같으면 예외 발생")
+    void updateAddressIfAddressIsSame() {
+        // given
+        Address sameReqAddress = Address.builder()
+                .area(area)
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .build();
+
+        when(areaRepository.findAreaByZipNum(sameReqAddress.getArea().getZipNum())).thenReturn(Optional.ofNullable(area));
+
+        // when & then
+        TwotwoApplicationException exception = Assertions.assertThrows(TwotwoApplicationException.class, () ->
+                addressService.updateAddress(address, sameReqAddress));
+        Assertions.assertEquals(ErrorCode.NO_ADDRESS_CHANGES, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("Address 일부만 변경해도 Address 저장 성공")
+    void updateAddressIfAddressPartiallyChanges() {
+        // given
+        Address reqAddress = Address.builder()
+                .roadAddress("updateRoadAddress")
+                .build();
+
+        Address updatedAddress = Address.builder()
+                .area(area)
+                .roadAddress("updateRoadAddress")
+                .detailAddress("detailAddress")
+                .build();
+
+        when(addressRepository.save(any(Address.class))).thenReturn(updatedAddress);
+
+        // when
+        Address actualAddress = addressService.updateAddress(address, reqAddress);
+
+        // then
+        Assertions.assertEquals("updateRoadAddress", actualAddress.getRoadAddress());
+        verify(addressRepository, times(1)).save(any(Address.class));
+    }
+
 
 }
