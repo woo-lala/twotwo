@@ -29,6 +29,7 @@ public enum ErrorCode {
 
     MEMBER_EMAIL_EXIST(HttpStatus.CONFLICT, "중복된 이메일 입니다."),
     MEMBER_USERNAME_EXIST(HttpStatus.CONFLICT, "중복된 아이디 입니다."),
+    MEMBER_GRANT_EXIST(HttpStatus.CONFLICT, "이미 있는 권한 입니다."),
     STORE_NAME_EXIST(HttpStatus.CONFLICT, "중복된 가게명 입니다."),
     ADDRESS_EXIST(HttpStatus.CONFLICT, "중복된 주소 입니다."),
 

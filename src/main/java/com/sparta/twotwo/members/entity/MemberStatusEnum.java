@@ -4,3 +4,4 @@ public enum MemberStatusEnum {
     ACTIVE,
     DELETE
 }
+
