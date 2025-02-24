@@ -91,7 +91,15 @@ public class StoreService {
         Store store = getStoreOrException(storeId);
 
         validateMember(modifier, store);
-        validateStoreName(reqStore.getName());
+
+        Optional.ofNullable(reqStore.getName()).ifPresent(storeName -> {
+                    if (storeName.equals(store.getName())) {
+                        throw new TwotwoApplicationException(ErrorCode.NO_STORE_NAME_CHANGES);
+                    }
+                    validateStoreName(reqStore.getName());
+                    store.updateName(storeName);
+                }
+        );
 
         Optional.ofNullable(reqStore.getCategory()).ifPresent(storeCategory -> {
                     StoreCategory category = getCategoryOrException(storeCategory.getId());
@@ -110,7 +118,6 @@ public class StoreService {
             store.updateMember(owner);
         });
 
-        Optional.ofNullable(reqStore.getName()).ifPresent(store::updateName);
         Optional.ofNullable(reqStore.getImageUrl()).ifPresent(store::updateImageUrl);
         Optional.ofNullable(reqStore.getMinOrderPrice()).ifPresent(store::updateMinOrderPrice);
         Optional.ofNullable(reqStore.getOperationStartedAt()).ifPresent(store::updateOperationStartedAt);

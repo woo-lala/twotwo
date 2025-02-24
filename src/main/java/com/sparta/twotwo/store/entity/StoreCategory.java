@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_store_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "is_deleted = false")
+@SQLRestriction("is_deleted = false")
 public class StoreCategory extends BaseEntity {
 
     @Id
