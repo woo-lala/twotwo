@@ -5,6 +5,7 @@ import com.sparta.twotwo.review.dto.CreateReviewRequestDto;
 import com.sparta.twotwo.review.dto.ReviewResponseDto;
 import com.sparta.twotwo.review.dto.SearchReviewRequestDto;
 import com.sparta.twotwo.review.dto.UpdateReviewRequestDto;
+import com.sparta.twotwo.review.entity.Review;
 import com.sparta.twotwo.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +28,18 @@ public class ReviewController {
             @Valid
             @RequestBody CreateReviewRequestDto requestDto
     ) {
-        ReviewResponseDto responseDto = reviewService.createReview(requestDto);
+        Review review = reviewService.createReview(requestDto);
+
+        ReviewResponseDto responseDto = new ReviewResponseDto(review);
         return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ReviewResponseDto>>> getReviews(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sortBy") String sortBy,
-            @RequestParam("isAsc") boolean isAsc,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "false") boolean isAsc,
             @Valid
             @RequestBody SearchReviewRequestDto requestDto
     ) {
@@ -46,8 +49,9 @@ public class ReviewController {
 
     @GetMapping("/{review_id}")
     public ResponseEntity<ApiResponse<ReviewResponseDto>> getReview(@PathVariable("review_id") UUID reviewId) {
-        ReviewResponseDto review = reviewService.getReview(reviewId);
-        return new ResponseEntity<>(ApiResponse.success(review), HttpStatus.OK);
+        Review review = reviewService.getReview(reviewId);
+        ReviewResponseDto responseDto = new ReviewResponseDto(review);
+        return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
 
     @PatchMapping("/{review_id}")
@@ -56,8 +60,9 @@ public class ReviewController {
             @RequestBody UpdateReviewRequestDto requestDto,
             @PathVariable("review_id") UUID reviewId
             ) {
-        ReviewResponseDto review = reviewService.updateReview(reviewId, requestDto);
-        return new ResponseEntity<>(ApiResponse.success(review), HttpStatus.OK);
+        Review review = reviewService.updateReview(reviewId, requestDto);
+        ReviewResponseDto responseDto = new ReviewResponseDto(review);
+        return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{review_id}")
