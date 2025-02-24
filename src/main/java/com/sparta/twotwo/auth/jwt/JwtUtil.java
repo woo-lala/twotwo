@@ -4,7 +4,6 @@ import com.sparta.twotwo.members.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,10 +11,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +20,9 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-
-//    private SecretKey key;
-//    Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     @Getter
     @Value("${jwt-secret-key}")
     private String secretKey;
-
-//    @Getter
-//    private final String secretKey = String.valueOf(key);
 
     @Value("${expire-token-time}")
     int expireTokenTime;
