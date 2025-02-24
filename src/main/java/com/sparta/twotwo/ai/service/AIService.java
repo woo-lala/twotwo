@@ -48,7 +48,7 @@ public class AIService {
                 aiRequestLog.setStatus(AIRequestStatus.FAILED);
                 aiRequestLog.setResponseText("AI 응답이 비어 있습니다.");
             } else {
-                aiRequestLog.setResponseText(response);
+                aiRequestLog.setResponseText(response.replace("\n", ""));
                 aiRequestLog.setStatus(AIRequestStatus.SUCCESS);
             }
         } catch (Exception e) {
