@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.service;
+package com.sparta.twotwo.address.service;
 
 import com.sparta.twotwo.address.service.AddressService;
 import com.sparta.twotwo.common.exception.ErrorCode;
