@@ -16,13 +16,11 @@ public class AuthorityUtil {
     private String masterEmail;
     @Value("${jwt-manager-email}")
     private String managerEmail;
-    private final static String ownerEmail = "owner@email.com";
 
 
     private final String CUSTOMER = RolesEnum.CUSTOMER.getAuthority();
     private final String MASTER = RolesEnum.MASTER.getAuthority();
     private final String MANAGER = RolesEnum.MANAGER.getAuthority();
-    private final String OWNER = RolesEnum.OWNER.getAuthority();
 
     public Set<String> createRoles(String email) {
         Set<String> roles = new HashSet<>();

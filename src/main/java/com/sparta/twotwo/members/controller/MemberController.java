@@ -33,12 +33,13 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<MemberResponseDto>>> getMembers(@RequestParam(required = false) String role,
+                                                                           @RequestParam(required = false) String status,
                                                                            @RequestParam(defaultValue = "10") int size,
                                                                            @RequestParam(defaultValue = "1") int page,
-                                                                           @RequestParam(defaultValue = "false") boolean isAsc) {
+                                                                           @RequestParam(defaultValue = "true") boolean isDesc) {
 
 
-        Page<Member> members = memberService.getMembers(role, size, page, isAsc);
+        Page<Member> members = memberService.getMembers(role, status, size, page, isDesc);
 
         Page<MemberResponseDto> responseDto =  members.map(MemberResponseDto::new);
 
@@ -68,6 +69,12 @@ public class MemberController {
         MemberResponseDto response = new MemberResponseDto(member);
 
         return new ResponseEntity<>(ApiResponse.success(response), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/grant/owner/{member_id}")
+    public void deleteMemberAuth(@PathVariable("member_id") Long member_id) {
+
+        memberService.removeMemberAuth(member_id);
     }
 
 

@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,20 +50,18 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public Page<Member> getMembers(String role, int size, int page, boolean isAsc) {
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "createdAt");
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
+    public Page<Member> getMembers(String role, String status, int size, int page, boolean isDesc) {
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         if(role == null) {
-           return memberRepository.findAll(pageable);
+           return memberRepository.findAllAndMemberStatus(status, isDesc, pageable);
         }
-        return memberRepository.findByRolesContaining(role, pageable);
+        return memberRepository.findByRoleAndMemberStatus(role, status, isDesc, pageable);
     }
 
     public Member getMember(Long memberId) {
         Member member = findMember(memberId);
-        if(!member.is_public()) {
+        if(!member.is_public() || member.getMemberStatus().equals(MemberStatusEnum.DELETE)) {
             throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
         }
         return member;
@@ -88,9 +85,21 @@ public class MemberService {
     @Transactional
     public Member addMemberAuth(Long memberId, RolesEnum role) {
             Member member = findMember(memberId);
-            member.addRole(role);
+            if(member.getRoles().contains("OWNER")) {
+                throw new TwotwoApplicationException(ErrorCode.MEMBER_GRANT_EXIST);
+            } else {
+                member.addRole(role);
+                return member;
+            }
+    }
 
-            return member;
+    public void removeMemberAuth(Long memberId) {
+        Member member = findMember(memberId);
+        if(!member.getRoles().contains("OWNER")) {
+            throw new TwotwoApplicationException(ErrorCode.MEMBER_NOT_FOUND);
+        } else {
+            member.getRoles().remove("OWNER");
+        }
     }
 
     public void deleteMember(Long memberId) {
