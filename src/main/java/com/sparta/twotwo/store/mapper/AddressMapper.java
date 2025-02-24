@@ -1,9 +1,9 @@
 package com.sparta.twotwo.store.mapper;
 
-import com.sparta.twotwo.store.dto.request.AddressRequestDto;
-import com.sparta.twotwo.store.dto.request.AddressUpdateRequest;
-import com.sparta.twotwo.store.dto.request.AreaRequestDto;
-import com.sparta.twotwo.store.dto.request.AreaUpdateRequestDto;
+import com.sparta.twotwo.address.dto.request.AddressRequestDto;
+import com.sparta.twotwo.address.dto.request.AddressUpdateRequest;
+import com.sparta.twotwo.address.dto.request.AreaRequestDto;
+import com.sparta.twotwo.address.dto.request.AreaUpdateRequestDto;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Area;
 import org.mapstruct.Mapper;

@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.dto.request;
+package com.sparta.twotwo.address.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

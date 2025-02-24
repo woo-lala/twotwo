@@ -1,5 +1,6 @@
 package com.sparta.twotwo.store.dto.request;
 
+import com.sparta.twotwo.address.dto.request.AddressUpdateRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
