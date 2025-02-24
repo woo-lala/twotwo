@@ -7,6 +7,7 @@ import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.service.ProductService;
+import com.sparta.twotwo.store.dto.StoreSearchRequestDto;
 import com.sparta.twotwo.store.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
@@ -36,6 +37,9 @@ public class StoreService {
     private final AddressService addressService;
     private final ProductService productService;
 
+    public Page<Store> searchStores(StoreSearchRequestDto search, Pageable pageable) {
+        return storeRepository.search(search, pageable);
+    }
 
     public Page<Store> getAllStores(Pageable pageable) {
         return storeRepository.findAll(pageable);
