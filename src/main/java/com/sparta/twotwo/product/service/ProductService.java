@@ -10,6 +10,10 @@ import com.sparta.twotwo.product.repository.ProductRepository;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,20 @@ public class ProductService {
             throw new IllegalStateException("로그인한 사용자만 접근할 수 있습니다.");
         }
         return memberId;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductListResponseDto> searchProducts(String keyword, Integer minPrice, Integer maxPrice, String sortBy, String sortDirection, int page, int size) {
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(
+                        Sort.Direction.fromString(sortDirection),
+                        sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"
+                )
+        );
+
+        return productRepository.searchProducts(keyword, minPrice, maxPrice, sortBy, sortDirection, pageable);
     }
 
     @Transactional
