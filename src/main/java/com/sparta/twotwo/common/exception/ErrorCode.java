@@ -13,7 +13,8 @@ public enum ErrorCode {
     PRODUCT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
     ORDER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "메뉴 요청의 구문이 잘못되었습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "요청의 구문이 잘못되었습니다."),
-    NO_ADDRESS_CHANGES(HttpStatus.BAD_REQUEST, "변경된 주소 정보가 없습니다."),
+    NO_ADDRESS_CHANGES(HttpStatus.BAD_REQUEST, "변경된 주소가 없습니다."),
+    NO_STORE_NAME_CHANGES(HttpStatus.BAD_REQUEST, "변경된 가게명이 없습니다."),
 
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "지정한 리소스에 대한 액세스 권한이 없습니다."),
     PAYMENT_REQUIRED(HttpStatus.PAYMENT_REQUIRED, "지정한 리소스를 액세스하기 위해서는 결제가 필요합니다."),
