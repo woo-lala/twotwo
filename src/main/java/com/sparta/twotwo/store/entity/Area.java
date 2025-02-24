@@ -10,11 +10,11 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "p_area")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Area extends BaseEntity {
 
-    @EqualsAndHashCode.Include
+//    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "BINARY(16)")
