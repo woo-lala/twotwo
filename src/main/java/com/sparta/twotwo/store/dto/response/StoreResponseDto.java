@@ -15,7 +15,7 @@ public class StoreResponseDto {
     private final String imageUrl;
     private final String name;
     private final Long minOrderPrice;
-//    private final List<ProductResponse> products;
+    private final AddressResponseDto address;
     private final BigDecimal rating;
     private final Integer reviewCount;
 
@@ -25,6 +25,7 @@ public class StoreResponseDto {
                 store.getImageUrl(),
                 store.getName(),
                 store.getMinOrderPrice(),
+                AddressResponseDto.from(store.getAddress()),
                 store.getRating(),
                 store.getReviewCount()
         );

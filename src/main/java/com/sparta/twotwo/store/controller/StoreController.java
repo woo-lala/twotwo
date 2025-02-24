@@ -1,6 +1,7 @@
 package com.sparta.twotwo.store.controller;
 
 import com.sparta.twotwo.common.response.ApiResponse;
+import com.sparta.twotwo.store.dto.StoreSearchRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreUpdateRequestDto;
 import com.sparta.twotwo.store.dto.response.StoreDetailResponseDto;
@@ -25,6 +26,20 @@ public class StoreController {
 
     private final StoreService storeService;
     private final StoreMapper storeMapper;
+
+    /**
+     * 조건 별 가게 검색
+     */
+    @GetMapping("/search/stores")
+    public ResponseEntity<ApiResponse<Page<StoreResponseDto>>> searchStores(
+            @ModelAttribute StoreSearchRequestDto request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+
+    ) throws Exception {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(ApiResponse.success(storeService.searchStores(request,pageable).map(StoreResponseDto::from)));
+    }
 
     /**
      * 가게 전체 조회
