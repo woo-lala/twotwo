@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.entity;
+package com.sparta.twotwo.address.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;
@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 import java.util.UUID;
 

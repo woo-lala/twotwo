@@ -1,5 +1,6 @@
 package com.sparta.twotwo.store.mapper;
 
+import com.sparta.twotwo.address.mapper.AddressMapper;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreUpdateRequestDto;

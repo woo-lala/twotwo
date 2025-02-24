@@ -5,7 +5,7 @@ import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
-import com.sparta.twotwo.store.entity.Address;
+import com.sparta.twotwo.address.entity.Address;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
 import com.sparta.twotwo.store.repository.StoreCategoryRepository;

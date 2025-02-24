@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.entity;
+package com.sparta.twotwo.address.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;

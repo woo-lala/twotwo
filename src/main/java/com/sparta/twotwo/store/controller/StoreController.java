@@ -1,7 +1,7 @@
 package com.sparta.twotwo.store.controller;
 
 import com.sparta.twotwo.common.response.ApiResponse;
-import com.sparta.twotwo.store.dto.StoreSearchRequestDto;
+import com.sparta.twotwo.store.dto.request.StoreSearchRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreCreateRequestDto;
 import com.sparta.twotwo.store.dto.request.StoreUpdateRequestDto;
 import com.sparta.twotwo.store.dto.response.StoreDetailResponseDto;

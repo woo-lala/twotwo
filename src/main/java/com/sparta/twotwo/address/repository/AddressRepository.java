@@ -1,6 +1,6 @@
-package com.sparta.twotwo.store.repository;
+package com.sparta.twotwo.address.repository;
 
-import com.sparta.twotwo.store.entity.Address;
+import com.sparta.twotwo.address.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
