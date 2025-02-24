@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -19,6 +20,8 @@ public class MemberResponseDto {
     private String email;
     private Set<String> roles;
     private String memberStatus;
+    private LocalDateTime created_at;
+    private LocalDateTime updated_at;
 
     public MemberResponseDto(Member member) {
         this.member_id = member.getMember_id();
@@ -27,5 +30,7 @@ public class MemberResponseDto {
         this.email = member.getEmail();
         this.roles = member.getRoles();
         this.memberStatus = member.getMemberStatus().toString();
+        this.created_at = member.getCreatedAt();
+        this.updated_at = member.getUpdatedAt();
     }
 }

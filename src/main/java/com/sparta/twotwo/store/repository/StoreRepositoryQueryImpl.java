@@ -4,7 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.twotwo.store.dto.StoreSearchRequestDto;
+import com.sparta.twotwo.store.dto.request.StoreSearchRequestDto;
 import com.sparta.twotwo.store.entity.Store;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

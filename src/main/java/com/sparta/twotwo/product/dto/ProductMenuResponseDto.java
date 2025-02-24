@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.dto.response;
+package com.sparta.twotwo.product.dto;
 
 import com.sparta.twotwo.product.entity.Product;
 import lombok.Getter;

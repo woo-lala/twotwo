@@ -2,16 +2,14 @@ package com.sparta.twotwo.order.entity;
 
 import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.members.entity.Member;
-import com.sparta.twotwo.members.entity.RolesEnum;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.repository.OrderRepository;
-import com.sparta.twotwo.product.entity.Product;
-import com.sparta.twotwo.store.entity.Address;
-import com.sparta.twotwo.store.entity.Area;
+import com.sparta.twotwo.address.entity.Address;
+import com.sparta.twotwo.address.entity.Area;
 import com.sparta.twotwo.store.entity.Store;
 import com.sparta.twotwo.store.entity.StoreCategory;
-import com.sparta.twotwo.store.repository.AddressRepository;
-import com.sparta.twotwo.store.repository.AreaRepository;
+import com.sparta.twotwo.address.repository.AddressRepository;
+import com.sparta.twotwo.address.repository.AreaRepository;
 import com.sparta.twotwo.store.repository.StoreCategoryRepository;
 import com.sparta.twotwo.store.repository.StoreRepository;
 import org.assertj.core.api.Assertions;
@@ -20,11 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest

@@ -1,11 +1,12 @@
-package com.sparta.twotwo.store.service;
+package com.sparta.twotwo.address.service;
 
+import com.sparta.twotwo.address.service.AddressService;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
-import com.sparta.twotwo.store.entity.Address;
-import com.sparta.twotwo.store.entity.Area;
-import com.sparta.twotwo.store.repository.AddressRepository;
-import com.sparta.twotwo.store.repository.AreaRepository;
+import com.sparta.twotwo.address.entity.Address;
+import com.sparta.twotwo.address.entity.Area;
+import com.sparta.twotwo.address.repository.AddressRepository;
+import com.sparta.twotwo.address.repository.AreaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

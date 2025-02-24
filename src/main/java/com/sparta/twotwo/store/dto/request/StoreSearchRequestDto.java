@@ -1,4 +1,4 @@
-package com.sparta.twotwo.store.dto;
+package com.sparta.twotwo.store.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
