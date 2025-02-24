@@ -6,6 +6,7 @@ import com.sparta.twotwo.product.service.ProductService;
 import com.sparta.twotwo.product.service.S3Service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,24 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
     private final S3Service s3Service;
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<ProductListResponseDto>>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+
+        Page<ProductListResponseDto> response = productService.searchProducts(keyword, minPrice, maxPrice, sortBy, sortDirection, page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     @GetMapping("/presigned-url")
     public ResponseEntity<ApiResponse<PresignedUrlResponseDto>> getPresignedUrl(@RequestParam String filename) {

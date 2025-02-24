@@ -1,6 +1,6 @@
 package com.sparta.twotwo.ai.entity;
 
-import com.sparta.twotwo.common.auditing.BaseEntity;
+import com.sparta.twotwo.common.auditing.AuditableEntity;
 import com.sparta.twotwo.enums.AIRequestStatus;
 import com.sparta.twotwo.product.entity.Product;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "p_ai_request_log")
-public class AIRequestLog extends BaseEntity {
+public class AIRequestLog extends AuditableEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
