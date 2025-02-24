@@ -76,7 +76,7 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return savedOrder.toResponseDto();
+        return savedOrder.toDetailResponseDto();
 
     }
 
@@ -98,7 +98,10 @@ public class OrderService {
     public Order getOrderById(UUID orderId) {
 
         Order order = orderRepository.findByOrderId(orderId);
-        log.info("order {}", order.toString());
+        if(order==null){
+            throw new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND);
+        }
+
         return order;
     }
 
