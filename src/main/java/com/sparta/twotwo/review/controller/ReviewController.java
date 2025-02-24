@@ -36,10 +36,10 @@ public class ReviewController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ReviewResponseDto>>> getReviews(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sortBy") String sortBy,
-            @RequestParam("isAsc") boolean isAsc,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "false") boolean isAsc,
             @Valid
             @RequestBody SearchReviewRequestDto requestDto
     ) {
