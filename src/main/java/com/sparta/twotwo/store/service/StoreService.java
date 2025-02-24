@@ -1,5 +1,6 @@
 package com.sparta.twotwo.store.service;
 
+import com.sparta.twotwo.address.service.AddressService;
 import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.exception.ErrorCode;
 import com.sparta.twotwo.common.exception.TwotwoApplicationException;
