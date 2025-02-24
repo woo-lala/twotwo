@@ -1,10 +1,7 @@
 package com.sparta.twotwo.order.controller;
 
 
-import com.sparta.twotwo.auth.service.MemberDetails;
-import com.sparta.twotwo.auth.util.SecurityUtil;
 import com.sparta.twotwo.common.response.ApiResponse;
-import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.members.repository.MemberRepository;
 import com.sparta.twotwo.order.dto.OrderProductRequestDto;
 import com.sparta.twotwo.order.dto.OrderRequestDto;
@@ -17,15 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -66,10 +56,6 @@ public class OrderController {
             @PathVariable("store_id") String store_id,
             @RequestBody OrderRequestDto orderRequestDto
     ){
-
-
-        log.info("requestDto: {}", orderRequestDto);
-
         UUID storeId = UUID.fromString(store_id);
         OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, storeId);
 
@@ -84,7 +70,7 @@ public class OrderController {
     @GetMapping("/orders/{order_id}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> getOrderById(@PathVariable("order_id") UUID orderId){
         Order findOrder = orderService.getOrderById(orderId);
-        OrderResponseDto responseDto = findOrder.toResponseDto();
+        OrderResponseDto responseDto = findOrder.toDetailResponseDto();
         return new ResponseEntity<>(ApiResponse.success(responseDto), HttpStatus.OK);
     }
 
@@ -94,15 +80,11 @@ public class OrderController {
             @PathVariable("order_id") UUID order_id,
             @PathVariable("product_id") UUID product_id,
             @RequestBody OrderProductRequestDto orderProductRequestDto){
-        log.info("orderId {}", order_id);
-        log.info("productId {}", product_id);
-        log.info("orderRequestDto {}", orderProductRequestDto);
         Order order = orderService.updateOrder(order_id, product_id, orderProductRequestDto);
-        return new ResponseEntity<>(ApiResponse.success(order.toResponseDto()), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.success(order.toDetailResponseDto()), HttpStatus.OK);
     }
 
-    //TODO
-    // Order 삭제
+
     @DeleteMapping("/orders/{order_id}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> deleteOrder(@PathVariable("order_id") UUID order_id){
         orderService.deleteOrder(order_id);

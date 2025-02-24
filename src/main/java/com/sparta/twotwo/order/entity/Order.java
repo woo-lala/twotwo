@@ -77,7 +77,7 @@ public class Order extends BaseEntity {
     }
 
 
-    public OrderResponseDto toResponseDto() {
+    public OrderResponseDto toDetailResponseDto() {
         return OrderResponseDto.builder()
                 .orderId(order_id)
                 .orderType(order_type)
