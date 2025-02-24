@@ -21,4 +21,5 @@ public class ProductListResponseDto {
     private int price;
     private String imageUrl;
     private String createdAt;
+    private String updatedAt;
 }
