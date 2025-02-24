@@ -44,6 +44,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/grant/**").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/grant/**").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     //store
