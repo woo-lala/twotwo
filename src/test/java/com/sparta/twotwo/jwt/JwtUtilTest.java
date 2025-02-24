@@ -24,6 +24,8 @@ public class JwtUtilTest {
 
     private JwtUtil jwtUtil;
     private Member mockMember;
+    @Value("${jwt-secret-key}")
+    private String secretKey;
     @Value("${jwt-master-email}")
     private String masterEmail;
     @Autowired
@@ -41,7 +43,8 @@ public class JwtUtilTest {
 
     @Test
     void testCreateToken() {
-        String token = jwtUtil.createToken(mockMember);
+        String base64EncodedSecretKey = jwtUtil.encodeBase64SecretKey(secretKey);
+        String token = jwtUtil.createToken(mockMember, base64EncodedSecretKey);
         assertNotNull(token);
         assertTrue(token.startsWith("eyJ"));
 

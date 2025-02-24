@@ -54,8 +54,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공 및 jwt 토큰 생성");
         MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
         Member member = memberDetails.getMember();
-
-        String token = jwtUtil.createToken(member);
+        String base64EncodedSecretKey = jwtUtil.encodeBase64SecretKey(jwtUtil.getSecretKey());
+        String token = jwtUtil.createToken(member, base64EncodedSecretKey);
         response.setHeader("Authorization", "Bearer " + token);
     }
 

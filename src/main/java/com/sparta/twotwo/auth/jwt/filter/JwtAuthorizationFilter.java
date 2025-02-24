@@ -53,8 +53,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private Map<String, Object> verifyJws(HttpServletRequest request) {
         String token = request.getHeader("Authorization").replace("Bearer ", "");
-
-        return jwtUtil.getClaims(token).getBody();
+        String base64EncodedSecretKey = jwtUtil.encodeBase64SecretKey(jwtUtil.getSecretKey());
+        return jwtUtil.getClaims(token, base64EncodedSecretKey).getBody();
     }
 
     private void setAuthentication(Map<String, Object> claims) { //SecurityContext 에 member_id 와 roles 저장
