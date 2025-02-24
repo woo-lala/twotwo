@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Getter
 @Table(name = "p_address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "is_deleted = false")
 public class Address extends BaseEntity {
 
     @Id
@@ -33,6 +35,18 @@ public class Address extends BaseEntity {
     public Address(Area area, String roadAddress, String detailAddress) {
         this.area = area;
         this.roadAddress = roadAddress;
+        this.detailAddress = detailAddress;
+    }
+
+    public void updateArea(Area area) {
+        this.area = area;
+    }
+
+    public void updateRoadAddress(String roadAddress) {
+        this.roadAddress = roadAddress;
+    }
+
+    public void updateDetailAddress(String detailAddress) {
         this.detailAddress = detailAddress;
     }
 

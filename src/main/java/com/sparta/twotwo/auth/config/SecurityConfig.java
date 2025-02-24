@@ -44,6 +44,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("CUSTOMER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/grant/**").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/members/grant/**").hasAnyRole("MASTER", "MANAGER")
                     .requestMatchers(HttpMethod.PATCH, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     .requestMatchers(HttpMethod.DELETE, "/api/members/**").hasAnyRole("MASTER", "CUSTOMER")
                     //store
@@ -55,13 +56,20 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("OWNER", "MANAGER")
 //                    .requestMatchers("/api/products").permitAll()
 
+                    // stores
+                    .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("MASTER", "MANAGER", "OWNER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("MASTER", "MANAGER", "OWNER")
+
                     //orders
-                    .requestMatchers(HttpMethod.GET, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.PUT, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
-                    .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
+                    .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasAnyRole("CUSTOMER","MASTER", "MANAGER")
 
                     //categories
+                    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("MASTER", "MANAGER")
 
                     //review

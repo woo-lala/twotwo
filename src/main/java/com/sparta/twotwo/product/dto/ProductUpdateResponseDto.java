@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Builder
 public class ProductUpdateResponseDto {
-    private String message;
     private UUID productId;
     private String updatedAt;
     private Long updatedBy;

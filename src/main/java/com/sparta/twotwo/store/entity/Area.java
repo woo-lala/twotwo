@@ -2,10 +2,7 @@ package com.sparta.twotwo.store.entity;
 
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,9 +10,11 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "p_area")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Area extends BaseEntity {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "BINARY(16)")
