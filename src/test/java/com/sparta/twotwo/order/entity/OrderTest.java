@@ -62,9 +62,9 @@ class OrderTest {
 
             Member find = memberRepository.findById(3L).orElseThrow();
 
-            Store store = new Store(find, address, i + "store",
-                    1000L, null, null, category, null, null, null);
-            storeRepository.save(store);
+//            Store store = new Store(find, address, i + "store",
+//                    1000L, null, null, category, null, null, null);
+            //storeRepository.save(store);
 
 
         }
