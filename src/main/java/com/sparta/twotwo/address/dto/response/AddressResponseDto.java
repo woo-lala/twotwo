@@ -1,6 +1,6 @@
-package com.sparta.twotwo.store.dto.response;
+package com.sparta.twotwo.address.dto.response;
 
-import com.sparta.twotwo.store.entity.Address;
+import com.sparta.twotwo.address.entity.Address;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

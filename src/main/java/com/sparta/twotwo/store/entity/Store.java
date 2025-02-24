@@ -1,5 +1,6 @@
 package com.sparta.twotwo.store.entity;
 
+import com.sparta.twotwo.address.entity.Address;
 import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.product.entity.Product;
@@ -7,7 +8,6 @@ import com.sparta.twotwo.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
