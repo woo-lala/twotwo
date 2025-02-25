@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: | # 실행중인 jar 재실행 // 백그라운드에서 실행
             pkill -f 'java -jar' || true
-            nohup java -jar ~/app/*.jar > app.log 2>&1 &
+            nohup java -jar ~/*.jar > app.log 2>&1 &
             
 
 
