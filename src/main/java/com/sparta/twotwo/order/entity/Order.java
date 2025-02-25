@@ -37,7 +37,7 @@ public class Order extends BaseEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(name="order_id", columnDefinition = "BINARY(16)")
+    @Column(name="order_id")
     private UUID order_id;
 
     @Enumerated

@@ -17,7 +17,7 @@ public class Area extends BaseEntity {
 //    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "BINARY(16)")
+    @Column
     private UUID id;
 
     @Column(name = "sido", nullable = false)
