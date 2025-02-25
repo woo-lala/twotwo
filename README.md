@@ -23,8 +23,7 @@
 
 ## 팀원 역할
 
-- Spring Security 및 JWT 기반 인증/인가 적용
-- MASTER, MANAGER, OWNER, CUSTOMER에 따라
+![Alt text](/docs/images/roles.png)
 
 <br>
 
