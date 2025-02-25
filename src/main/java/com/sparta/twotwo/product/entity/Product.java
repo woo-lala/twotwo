@@ -23,11 +23,11 @@ public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.BINARY)
-    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", columnDefinition = "BINARY(16)", nullable = false)
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     @OneToOne(fetch = FetchType.LAZY)

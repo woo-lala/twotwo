@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${RDS-ENDPOINT}:5432/twotwo
+    url: ${RDS_ENDPOINT}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
@@ -29,7 +29,7 @@ gemini:
       s3:
         bucket: twotwofoodorder
 
-jwt-secret-key: ${JWT_SECRET_KEY}
-jwt-master-email: ${JWT_MASTER_EMAIL}
-jwt-manager-email: ${JWT_MANAGER_EMAIL}
-expire-token-time: ${EXPIRE_TOKEN_TIME}
+jwt-secret-key: ${jwt_secret_key}
+jwt-master-email: ${jwt_master_email}
+jwt-manager-email: ${jwt_manager_email}
+expire-token-time: ${expire_token_time}
