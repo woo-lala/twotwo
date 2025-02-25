@@ -21,10 +21,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Start SSH agent
+      - name: Setup SSH key
         run: |
-          eval "$(ssh-agent -s)"
-          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' | ssh-add -
+            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
 
       - name: 빌드
         run: ./gradlew clean build -x test
