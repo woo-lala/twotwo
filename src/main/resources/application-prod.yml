@@ -15,10 +15,6 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-gemini:
-  api:
-    key: ${GEMINI_API_KEY}
-
   cloud:
     aws:
       credentials:
@@ -28,6 +24,10 @@ gemini:
         static: ap-northeast-2
       s3:
         bucket: twotwofoodorder
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
 
 jwt-secret-key: ${jwt_secret_key}
 jwt-master-email: ${jwt_master_email}
