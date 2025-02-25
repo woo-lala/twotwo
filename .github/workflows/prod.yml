@@ -49,7 +49,11 @@ jobs:
           echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> .env
 
       - name: 빌드
-        run: ./gradlew clean build -x test
+        run: |
+          set -o allexport
+          source .env
+          set +o allexport
+          ./gradlew build -x test
         env:
           RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
