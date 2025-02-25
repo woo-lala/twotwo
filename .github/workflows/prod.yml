@@ -27,6 +27,19 @@ jobs:
             echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
 
+      - name: 환경 변수 설정
+        run: |
+          echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> $GITHUB_ENV
+          echo "USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
+          echo "PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "JWT_MASTER_EMAIL=${{ secrets.JWT_MASTER_EMAIL }}" >> $GITHUB_ENV
+          echo "JWT_MANAGER_EMAIL=${{ secrets.JWT_MANAGER_EMAIL }}" >> $GITHUB_ENV
+          echo "EXPIRE_TOKEN_TIME=${{ secrets.EXPIRE_TOKEN_TIME }}" >> $GITHUB_ENV
+
       - name: 빌드
         run: ./gradlew clean build -x test
 
