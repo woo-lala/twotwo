@@ -21,8 +21,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup SSH key
+        run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+
       - name: 빌드
         run: ./gradlew clean build -x test
+
+     
 
       - name: JAR 파일 EC2에 복사
         uses: appleboy/scp-action@v0.1.0
@@ -31,7 +39,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar"
-          target: "~/app/" # 실행시킬 파일의 위치 EC2 콘솔 내 생성
+          target: "~/" # 실행시킬 파일의 위치 EC2 콘솔 내 생성
+          port: 22
+          proxy_port: 80
 
       - name: EC2 재실행
         uses: appleboy/ssh-action@master
