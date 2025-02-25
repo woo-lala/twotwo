@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${RDS-ENDPOINT}:5432/twotwo
+    username: ${USERNAME}
+    password: ${PASSWORD}
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: twotwofoodorder
+
+jwt-secret-key: ${JWT_SECRET_KEY}
+jwt-master-email: ${JWT_MASTER_EMAIL}
+jwt-manager-email: ${JWT_MANAGER_EMAIL}
+expire-token-time: ${EXPIRE_TOKEN_TIME}
