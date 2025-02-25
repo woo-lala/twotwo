@@ -23,7 +23,42 @@ jobs:
           java-version: '17'
 
       - name: 실행 권한 부여
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
+
+      - name: Create application.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "spring:" > src/main/resources/application-dev-test.yml
+          echo "  datasource:" >> src/main/resources/application-dev-test.yml
+          echo "    driver-class-name: com.mysql.cj.jdbc.Driver" >> src/main/resources/application-dev-test.yml
+          echo "    url: jdbc:mysql://localhost:3306/twotwo" >> src/main/resources/application-dev-test.yml
+          echo "    username: ${{ secrets.DB_USERNAME }}" >> src/main/resources/application-dev-test.yml
+          echo "    password: ${{ secrets.DB_PASSWORD }}" >> src/main/resources/application-dev-test.yml
+          echo "" >> src/main/resources/application-dev-test.yml
+          echo "  jpa:" >> src/main/resources/application-dev-test.yml
+          echo "    database: mysql" >> src/main/resources/application-dev-test.yml
+          echo "    hibernate:" >> src/main/resources/application-dev-test.yml
+          echo "      ddl-auto: update" >> src/main/resources/application-dev-test.yml
+          echo "    properties:" >> src/main/resources/application-dev-test.yml
+          echo "      hibernate:" >> src/main/resources/application-dev-test.yml
+          echo "        show_sql: true" >> src/main/resources/application-dev-test.yml
+          echo "        format_sql: true" >> src/main/resources/application-dev-test.yml
+          echo "        use_sql_comments: true" >> src/main/resources/application-dev-test.yml
+          echo "" >> src/main/resources/application-dev-test.yml
+          echo "  cloud:" >> src/main/resources/application-dev-test.yml
+          echo "    aws:" >> src/main/resources/application-dev-test.yml
+          echo "      credentials:" >> src/main/resources/application-dev-test.yml
+          echo "        access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}" >> src/main/resources/application-dev-test.yml
+          echo "        secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> src/main/resources/application-dev-test.yml
+          echo "      region:" >> src/main/resources/application-dev-test.yml
+          echo "        static: ap-northeast-2" >> src/main/resources/application-dev-test.yml
+          echo "      s3:" >> src/main/resources/application-dev-test.yml
+          echo "        bucket: twotwofoodorder" >> src/main/resources/application-dev-test.yml
+          echo "" >> src/main/resources/application-dev-test.yml
+          echo "jwt-secret-key: ${{ secrets.JWT_SECRET_KEY }}" >> src/main/resources/application-dev-test.yml
+          echo "jwt-master-email: ${{ secrets.JWT_MASTER_EMAIL }}" >> src/main/resources/application-dev-test.yml
+          echo "jwt-manager-email: ${{ secrets.JWT_MANAGER_EMAIL }}" >> src/main/resources/application-dev-test.yml
+          echo "expire-token-time: ${{ secrets.EXPIRE_TOKEN_TIME }}" >> src/main/resources/application-dev-test.yml
 
       - name: gradle 빌드
         run: ./gradlew clean build -x test
