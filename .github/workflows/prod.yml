@@ -35,11 +35,6 @@ jobs:
           echo "jwt_manager_email=${{ secrets.JWT_MANAGER_EMAIL }}" >> $GITHUB_ENV
           echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> $GITHUB_ENV
 
-    
-
-      - name: 빌드
-        run: ./gradlew clean build -x test
-
       - name: 환경 변수 파일 생성 및 전송
         run: |
           echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" > .env
@@ -52,6 +47,11 @@ jobs:
           echo "jwt_master_email=${{ secrets.JWT_MASTER_EMAIL }}" >> .env
           echo "jwt_manager_email=${{ secrets.JWT_MANAGER_EMAIL }}" >> .env
           echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> .env
+
+      - name: 빌드
+        run: ./gradlew clean build -x test
+
+      
 
      
 
