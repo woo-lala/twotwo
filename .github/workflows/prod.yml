@@ -22,9 +22,9 @@ jobs:
           java-version: '17'
 
 
-      - name: 환경 변수 설정
-        run: |
-         echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yml
+      # - name: 환경 변수 설정
+      #   run: |
+      #    echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yml
 
 
       - name: 빌드
@@ -34,15 +34,15 @@ jobs:
           set +o allexport
           ./gradlew build -x test
         env:
-          APPLICATION: ${{ secrets.APPLICATION }}
-          # RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          # DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          # DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          # GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # jwt_secret_key: ${{ secrets.JWT_SECRET_KEY }}
-          # jwt_master_email: ${{ secrets.JWT_MASTER_EMAIL }}
-          # jwt_manager_email: ${{ secrets.JWT_MANAGER_EMAIL }}
-          # expire_token_time: ${{ secrets.EXPIRE_TOKEN_TIME }}
+          # APPLICATION: ${{ secrets.APPLICATION }}
+          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          jwt_secret_key: ${{ secrets.JWT_SECRET_KEY }}
+          jwt_master_email: ${{ secrets.JWT_MASTER_EMAIL }}
+          jwt_manager_email: ${{ secrets.JWT_MANAGER_EMAIL }}
+          expire_token_time: ${{ secrets.EXPIRE_TOKEN_TIME }}
 
       
 
