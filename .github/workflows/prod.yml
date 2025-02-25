@@ -40,8 +40,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar"
           target: "~/" # 실행시킬 파일의 위치 EC2 콘솔 내 생성
-          port: 80
-          proxy_port: 8080
+          port: 22
+          proxy_port: 80
 
       - name: EC2 재실행
         uses: appleboy/ssh-action@master
