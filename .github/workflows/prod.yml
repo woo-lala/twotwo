@@ -25,16 +25,6 @@ jobs:
       - name: 환경 변수 설정
         run: |
          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yml
-          # echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> $GITHUB_ENV
-          # echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
-          # echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          # echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
-          # echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          # echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          # echo "jwt_secret_key=${{ secrets.JWT_SECRET_KEY }}" >> $GITHUB_ENV
-          # echo "jwt_master_email=${{ secrets.JWT_MASTER_EMAIL }}" >> $GITHUB_ENV
-          # echo "jwt_manager_email=${{ secrets.JWT_MANAGER_EMAIL }}" >> $GITHUB_ENV
-          # echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> $GITHUB_ENV
 
       # - name: 환경 변수 파일 생성 및 전송
       #   run: |
@@ -47,7 +37,7 @@ jobs:
       #     echo "jwt_secret_key=${{ secrets.JWT_SECRET_KEY }}" >> .env
       #     echo "jwt_master_email=${{ secrets.JWT_MASTER_EMAIL }}" >> .env
       #     echo "jwt_manager_email=${{ secrets.JWT_MANAGER_EMAIL }}" >> .env
-          echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> .env
+          # echo "expire_token_time=${{ secrets.EXPIRE_TOKEN_TIME }}" >> .env
 
       - name: 빌드
         run: |
