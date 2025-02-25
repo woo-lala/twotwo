@@ -4,6 +4,7 @@ import com.sparta.twotwo.common.auditing.BaseEntity;
 import com.sparta.twotwo.enums.OrderType;
 import com.sparta.twotwo.members.entity.Member;
 import com.sparta.twotwo.order.dto.OrderResponseDto;
+import com.sparta.twotwo.pay.entity.Payment;
 import com.sparta.twotwo.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,6 +58,9 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<OrderProduct> orderProducts;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.REMOVE)
+    private Payment payment;
 
     public void addOrderProductList(OrderProduct orderProduct) {
         this.orderProducts.add(orderProduct);

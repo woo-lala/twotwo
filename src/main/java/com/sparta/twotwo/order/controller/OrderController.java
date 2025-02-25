@@ -53,11 +53,11 @@ public class OrderController {
      */
     @PostMapping("/orders/{store_id}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
-            @PathVariable("store_id") String store_id,
+            @PathVariable("store_id") UUID store_id,
             @RequestBody OrderRequestDto orderRequestDto
     ){
-        UUID storeId = UUID.fromString(store_id);
-        OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, storeId);
+//        UUID storeId = UUID.fromString(store_id);
+        OrderResponseDto orderResponseDto = orderService.saveOrder(orderRequestDto, store_id);
 
         return new ResponseEntity<>(ApiResponse.success(orderResponseDto), HttpStatus.OK);
     }

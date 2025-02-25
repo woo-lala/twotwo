@@ -13,6 +13,7 @@ import com.sparta.twotwo.order.entity.Order;
 import com.sparta.twotwo.order.entity.OrderProduct;
 import com.sparta.twotwo.order.repository.OrderProductRepository;
 import com.sparta.twotwo.order.repository.OrderRepository;
+import com.sparta.twotwo.pay.service.PaymentService;
 import com.sparta.twotwo.product.entity.Product;
 import com.sparta.twotwo.product.repository.ProductRepository;
 import com.sparta.twotwo.store.entity.Store;
@@ -41,6 +42,8 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+
+    private final PaymentService paymentService;
 
 
     public OrderResponseDto saveOrder(OrderRequestDto orderRequestDto, UUID storeId) {
@@ -73,8 +76,10 @@ public class OrderService {
         }
         
         order.setTotalPrice(totalPrice);
-
         Order savedOrder = orderRepository.save(order);
+
+        // 결제 내역 추가
+        paymentService.save(savedOrder, member);
 
         return savedOrder.toDetailResponseDto();
 
@@ -107,9 +112,16 @@ public class OrderService {
 
 
     public Order updateOrder(UUID orderId, UUID productId, OrderProductRequestDto orderProductRequestDto) {
+        Long loginMember = SecurityUtil.getMemberIdFromSecurityContext();
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+
+//        Long memberId = order.getMember().getMember_id();
+//        if( memberId!=loginMember){
+//            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+//        }
+
 
         if (order.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
             throw new TwotwoApplicationException(ErrorCode.TIMEOUT_UPDATE_ORDER);
@@ -138,28 +150,34 @@ public class OrderService {
     }
 
     public void deleteOrder(UUID orderId) {
+        Long loginMember = SecurityUtil.getMemberIdFromSecurityContext();
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(()->new TwotwoApplicationException(ErrorCode.ORDER_NOT_FOUND));
+
+        Long memberId = order.getMember().getMember_id();
+        if(memberId!=loginMember){
+            throw new TwotwoApplicationException(ErrorCode.UNAUTHORIZED);
+        }
+
+
         order.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
         order.setDeletedAt(LocalDateTime.now());
         orderRepository.save(order);
         orderRepository.flush();
 
 
-        log.info("order {}", order.toString());
         // 주문 상품 삭제 정보 업데이트
         order.getOrderProducts().forEach(orderProduct -> {
             orderProduct.setDeletedBy(SecurityUtil.getMemberIdFromSecurityContext());
             orderProduct.setDeletedAt(LocalDateTime.now());
             orderProductRepository.save(orderProduct);
         });
+        orderProductRepository.flush();
 
-
-        orderRepository.flush();
+        paymentService.delete(order);
 
         orderRepository.deleteById(orderId);
-
 
     }
 
