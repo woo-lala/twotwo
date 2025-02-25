@@ -30,7 +30,7 @@ jobs:
       - name: 빌드
         run: |
           set -o allexport
-          source .env
+          # source .env
           set +o allexport
           ./gradlew build -x test
         # env:
