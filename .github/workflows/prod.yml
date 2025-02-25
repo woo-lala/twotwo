@@ -33,15 +33,15 @@ jobs:
           source .env
           set +o allexport
           ./gradlew build -x test
-        env:
-          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          jwt_secret_key: ${{ secrets.JWT_SECRET_KEY }}
-          jwt_master_email: ${{ secrets.JWT_MASTER_EMAIL }}
-          jwt_manager_email: ${{ secrets.JWT_MANAGER_EMAIL }}
-          expire_token_time: ${{ secrets.EXPIRE_TOKEN_TIME }}
+        # env:
+        #   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+        #   DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        #   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        #   jwt_secret_key: ${{ secrets.JWT_SECRET_KEY }}
+        #   jwt_master_email: ${{ secrets.JWT_MASTER_EMAIL }}
+        #   jwt_manager_email: ${{ secrets.JWT_MANAGER_EMAIL }}
+        #   expire_token_time: ${{ secrets.EXPIRE_TOKEN_TIME }}
 
       
 
@@ -62,7 +62,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: ".env"
+          # source: ".env"
           target: "~/app/"
           
       
