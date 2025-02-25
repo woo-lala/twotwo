@@ -21,11 +21,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup SSH key
-        run: |
-            mkdir -p ~/.ssh
-            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
 
       - name: 환경 변수 설정
         run: |
