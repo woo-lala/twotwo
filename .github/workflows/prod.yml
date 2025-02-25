@@ -24,6 +24,9 @@ jobs:
       - name: 빌드
         run: ./gradlew clean build -x test
 
+      - name: Add SSH key
+        run: echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' | ssh-add -
+
       - name: JAR 파일 EC2에 복사
         uses: appleboy/scp-action@v0.1.0
         with:
