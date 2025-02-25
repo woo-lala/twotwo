@@ -30,7 +30,7 @@ jobs:
       - name: 빌드
         run: |
           set -o allexport
-          # source .env
+          source .env
           set +o allexport
           ./gradlew build -x test
         env:
@@ -67,7 +67,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/app
-            # source .env
+            source .env
             nohup java -jar twotwo-0.0.1-SNAPSHOT.jar > log.txt 2>&1 &
             
 
